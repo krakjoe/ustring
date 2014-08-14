@@ -364,11 +364,11 @@ PHP_METHOD(UString, replace) {
     switch (Z_TYPE_P(zsearch)) {
         case IS_STRING: switch(Z_TYPE_P(zreplace)) {
             case IS_STRING:
-                ustring->val->findAndReplace(UnicodeString(Z_STRVAL_P(zsearch)), UnicodeString(Z_STRVAL_P(zreplace)));
+                ustring->val->findAndReplace(UnicodeString(Z_STRVAL_P(zsearch), Z_STRLEN_P(zsearch)), UnicodeString(Z_STRVAL_P(zreplace), Z_STRLEN_P(zreplace)));
             break;
             
             case IS_OBJECT: {
-                ustring->val->findAndReplace(UnicodeString(Z_STRVAL_P(zsearch)), *(PHP_USTRING_FETCH(zreplace))->val);
+                ustring->val->findAndReplace(UnicodeString(Z_STRVAL_P(zsearch), Z_STRLEN_P(zsearch)), *(PHP_USTRING_FETCH(zreplace))->val);
             } break;
         } break;
         
@@ -378,7 +378,7 @@ PHP_METHOD(UString, replace) {
             break;
             
             case IS_STRING: 
-                ustring->val->findAndReplace(*(PHP_USTRING_FETCH(zsearch))->val, UnicodeString(Z_STRVAL_P(zreplace)));
+                ustring->val->findAndReplace(*(PHP_USTRING_FETCH(zsearch))->val, UnicodeString(Z_STRVAL_P(zreplace), Z_STRLEN_P(zreplace)));
             break;
         } break;
     }

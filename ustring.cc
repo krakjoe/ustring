@@ -379,6 +379,32 @@ PHP_METHOD(UString, replace) {
 } /* }}} */
 
 /* {{{ */
+PHP_METHOD(UString, __toString) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+    uint32_t targetLength = 0;
+    char *target = NULL;
+    
+    if (zend_parse_parameters_none() != SUCCESS) {
+        return;
+    }        
+    
+    targetLength = ustring->val->extract
+        (0, ustring->val->length(), target, targetLength);
+    
+    if (!targetLength)
+        RETURN_NULL();
+    
+    target = (char*) ecalloc(1, targetLength+1);
+    
+    ustring->val->extract
+        (0, ustring->val->length(), target, targetLength);
+    
+    target[targetLength] = 0;
+    
+    RETURN_STRINGL(target, targetLength, 0);
+} /* }}} */
+
+/* {{{ */
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_no_arginfo, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -416,6 +442,7 @@ zend_function_entry php_ustring_methods[] = {
     PHP_ME(UString, truncate, php_ustring_truncate_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, append, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, replace, php_ustring_replace_arginfo, ZEND_ACC_PUBLIC)
+    PHP_ME(UString, __toString, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
     PHP_FE_END
 }; /* }}} */
 

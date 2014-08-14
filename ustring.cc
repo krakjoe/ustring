@@ -44,25 +44,29 @@ zend_class_entry *ce_UString;
 
 zend_object_handlers php_ustring_handlers;
 
-/* {{{ proto UString UString::__contruct(string arg) */
+/* {{{ proto UString UString::__contruct(string arg [, string codepage [, int length]]) */
 PHP_METHOD(UString, __construct)
 {
-	char *val = NULL;
-	long  len = 0, inv = US_INV;
+	char *val = NULL, 
+	     *codepage = 0;
+	long  vlen = 0, 
+	      len = 0,
+	      clen = 0;
 	
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &val, &len, &inv) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|sl", &val, &vlen, &codepage, &clen, &len) != SUCCESS) {
 	    return;
 	}
 	
 	switch (ZEND_NUM_ARGS()) {
+	    case 3:
 	    case 2:
-	        ustring->val = new UnicodeString(val, len, inv);
+	        ustring->val = new UnicodeString(val, len ? len : vlen, codepage);
 	    break;
 	    
 	    case 1:
-	        ustring->val = new UnicodeString(val, len);
+	        ustring->val = new UnicodeString(val, len ? len : vlen);
 	    break;
 	}
 }

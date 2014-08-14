@@ -44,7 +44,7 @@ zend_class_entry *ce_UString;
 
 zend_object_handlers php_ustring_handlers;
 
-/* {{{ proto UString UString::__contruct(string arg [, string codepage [, int length]]) */
+/* {{{ proto UString UString::__contruct([string arg [, string codepage [, int length]]]) */
 PHP_METHOD(UString, __construct)
 {
 	char *val = NULL, 
@@ -55,7 +55,7 @@ PHP_METHOD(UString, __construct)
 	
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|sl", &val, &vlen, &codepage, &clen, &len) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|ssl", &val, &vlen, &codepage, &clen, &len) != SUCCESS) {
 	    return;
 	}
 	
@@ -67,6 +67,10 @@ PHP_METHOD(UString, __construct)
 	    
 	    case 1:
 	        ustring->val = new UnicodeString(val, len ? len : vlen);
+	    break;
+	    
+	    case 0:
+	        ustring->val = new UnicodeString();
 	    break;
 	}
 }

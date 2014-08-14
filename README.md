@@ -6,7 +6,7 @@ The following Unicode String support for PHP ...
 ```php
 <?php
 abstract class UString {
-    public function __construct($string);
+    public function __construct([string $string [, string $codepage [, int $length]]]);
     
     /** 
     * @return int

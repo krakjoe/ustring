@@ -378,7 +378,7 @@ PHP_METHOD(UString, replace) {
     RETURN_LONG(ustring->val->length());
 } /* }}} */
 
-/* {{{ */
+/* {{{ proto string UString::__toString(void) */
 PHP_METHOD(UString, __toString) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
     uint32_t targetLength = 0;

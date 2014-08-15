@@ -28,17 +28,16 @@ extern "C" {
 #    include "ext/standard/info.h"
 }
 
-#include "php_ustring.h"
-
 #include "unicode/unistr.h"
 
+#include "php_ustring.h"
+
 typedef struct _php_ustring_t {
-    zend_object   std;
-    zend_object_handle h;
     UnicodeString *val;
+    zend_object   std;
 } php_ustring_t;
 
-#define PHP_USTRING_FETCH(o) (php_ustring_t*) zend_object_store_get_object(o TSRMLS_CC)
+#define PHP_USTRING_FETCH(o) (php_ustring_t*) (Z_OBJ_P(o) - XtOffsetOf(php_ustring_t, std))
 
 zend_class_entry *ce_UString;
 
@@ -402,14 +401,18 @@ PHP_METHOD(UString, __toString) {
     if (!targetLength)
         RETURN_NULL();
     
-    target = (char*) ecalloc(1, targetLength+1);
+    RETVAL_EMPTY_STRING();
     
-    ustring->val->extract
-        (0, ustring->val->length(), target, targetLength);
-    
-    target[targetLength] = 0;
-    
-    RETURN_STRINGL(target, targetLength, 0);
+    Z_STR_P(return_value) = STR_ALLOC(targetLength+1, 0);
+
+    ustring->val->extract(
+        0, 
+        ustring->val->length(), 
+        (char*) Z_STRVAL_P(return_value), 
+        targetLength);
+
+    Z_STRLEN_P(return_value) = targetLength;
+    Z_STRVAL_P(return_value)[Z_STRLEN_P(return_value)] = 0;
 } /* }}} */
 
 /* {{{ */
@@ -455,38 +458,23 @@ zend_function_entry php_ustring_methods[] = {
 }; /* }}} */
 
 /* {{{ */
-static inline void php_ustring_destroy(void *zobject, zend_object_handle handle TSRMLS_DC) {
-	zend_objects_destroy_object(static_cast<zend_object*>(zobject), handle TSRMLS_CC);
-}
-
-static inline void php_ustring_free(void *zobject TSRMLS_DC) {
-	php_ustring_t *ustring = 
-		(php_ustring_t *) zobject;
-
+static inline void php_ustring_free(zend_object *zobject TSRMLS_DC) {
+    php_ustring_t *ustring = (php_ustring_t*)((char*)(zobject) - XtOffsetOf(php_ustring_t, std));
+ 
 	zend_object_std_dtor(&ustring->std TSRMLS_CC);
-
+	
 	delete ustring->val;
-
-	efree(ustring);
 }
 
-static inline zend_object_value php_ustring_create(zend_class_entry *ce TSRMLS_DC) {
-	zend_object_value value;
+static inline zend_object* php_ustring_create(zend_class_entry *ce TSRMLS_DC) {
 	php_ustring_t *ustring = 
 		(php_ustring_t*) ecalloc(1, sizeof(php_ustring_t));
 	
 	zend_object_std_init(&ustring->std, ce TSRMLS_CC);
-	object_properties_init(&ustring->std, ce);
-		
-	ustring->h = zend_objects_store_put(
-		ustring,
-		php_ustring_destroy, 
-		php_ustring_free, NULL TSRMLS_CC);
-		
-	value.handle   = ustring->h;
-	value.handlers = &php_ustring_handlers;
-	
-	return value;
+
+    ustring->std.handlers = &php_ustring_handlers;
+    
+	return &ustring->std;
 } /* }}} */
 
 /* {{{ PHP_MINIT_FUNCTION
@@ -503,7 +491,10 @@ PHP_MINIT_FUNCTION(ustring)
 	memcpy(
 		&php_ustring_handlers,
 		zend_get_std_object_handlers(), 
-		sizeof(php_ustring_handlers));
+		sizeof(zend_object_handlers));
+		
+    php_ustring_handlers.offset   = XtOffsetOf(php_ustring_t, std);
+    php_ustring_handlers.free_obj = php_ustring_free;
 	
 	return SUCCESS;
 }

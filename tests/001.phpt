@@ -6,7 +6,7 @@ Test UString::length
 <?php
 $std = "こんにちは世界";
 
-$string = new UString($std, "UTF8");
+$string = new UString($std, "UTF-8");
 
 var_dump($string->length());
 var_dump(strlen($string));

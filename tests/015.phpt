@@ -8,10 +8,10 @@ $std = "こんにちは世界";
 
 $string = new UString($std);
 
+var_dump($string->length());
 $result = $string .= ", whatever";
-
-var_dump((string) $result);
+var_dump($result->length());
 ?>
---EXPECTF--
-string(17) "%s, whatever"
-
+--EXPECT--
+int(7)
+int(17)

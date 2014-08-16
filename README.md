@@ -1,7 +1,7 @@
 ustring
 =======
 
-The following Unicode String support for PHP ...
+The following Unicode String support for PHP7 ...
 
 ```php
 <?php

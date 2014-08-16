@@ -641,6 +641,59 @@ static inline void php_ustring_globals_ctor(zend_ustring_globals  *ug TSRMLS_DC)
     ug->codepage = NULL;
 } /* }}} */
 
+/* {{{ */
+static inline zval* php_ustring_read(zval *object, zval *offset, int type, zval *rv TSRMLS_DC) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(object), 
+                  *rstring;
+    zend_bool clean = 0;
+    
+    object_init_ex(rv, ce_UString);
+    
+    if (Z_TYPE_P(offset) != IS_LONG) {
+        convert_to_long(offset);
+        clean = 1;
+    }
+    
+    rstring = PHP_USTRING_FETCH(rv);
+    rstring->val = new UnicodeString
+        (*ustring->val, Z_LVAL_P(offset), 1);
+    rstring->codepage = STR_COPY(ustring->codepage);
+    
+    if (clean)
+        zval_ptr_dtor(offset);
+       
+    return rv;
+} /* }}} */
+
+/* {{{ */
+static inline void php_ustring_write(zval *object, zval *offset, zval *zvalue TSRMLS_DC) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(object);
+    zend_bool cleanup = 0;
+    UnicodeString source;
+    
+    if (Z_TYPE_P(offset) != IS_LONG) {
+        convert_to_long(offset);
+        cleanup = 1;
+    }
+    
+    if (Z_TYPE_P(zvalue) == IS_STRING) {
+        source = UnicodeString(Z_STRVAL_P(zvalue), ustring->codepage->val);
+    } else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+        if (instanceof_function(Z_OBJCE_P(zvalue), ce_UString TSRMLS_CC)) {
+            source = *(PHP_USTRING_FETCH(zvalue))->val;
+        } else {
+            if (cleanup)   
+                zval_ptr_dtor(offset);
+            return;
+        }
+    }
+    
+    ustring->val->replace(Z_LVAL_P(offset), source.length(), source);
+    
+    if (cleanup)
+        zval_ptr_dtor(offset);
+} /* }}} */
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ustring)
@@ -663,6 +716,8 @@ PHP_MINIT_FUNCTION(ustring)
     php_ustring_handlers.free_obj = php_ustring_free;
 	php_ustring_handlers.do_operation = php_ustring_operate;
 	php_ustring_handlers.cast_object = php_ustring_cast;
+	php_ustring_handlers.read_dimension = php_ustring_read;
+	php_ustring_handlers.write_dimension = php_ustring_write;
 	
 	return SUCCESS;
 }

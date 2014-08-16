@@ -12,5 +12,5 @@ $string->replace("歓迎", "welcome :)");
 
 var_dump((string) $string);
 ?>
---EXPECTF--
-string(18) "%s welcome :)"
+--EXPECT--
+string(32) "こんにちは世界 welcome :)"

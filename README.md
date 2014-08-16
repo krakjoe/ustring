@@ -79,3 +79,5 @@ abstract class UString {
 It's actually simple ...
 
 *Note: UString is interchangable with zend strings for method parameters and can be cast for output/conversion to zend strings*
+
+*This extension requires PHP7*

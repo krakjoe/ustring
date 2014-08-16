@@ -6,7 +6,7 @@ Test UString::reverse
 <?php
 $std = "こんにちは世界";
 
-$string = new UString($std, "UTF-8");
+$string = new UString($std);
 
 $string->reverse();
 

@@ -26,6 +26,7 @@ extern "C" {
 #    include "php.h"
 #    include "php_ini.h"
 #    include "ext/standard/info.h"
+ZEND_DECLARE_MODULE_GLOBALS(ustring);
 }
 
 #include "unicode/unistr.h"
@@ -44,35 +45,32 @@ zend_class_entry *ce_UString;
 
 zend_object_handlers php_ustring_handlers;
 
-/* {{{ proto UString UString::__contruct([string arg , string codepage [, int length]]) */
+/* {{{ proto UString UString::__contruct([string arg , [string codepage = "utf-8"]]) */
 PHP_METHOD(UString, __construct)
 {
 	char *val = NULL, 
 	     *codepage = NULL;
 	long  vlen = 0,
-	      len = 0,
 	      clen = 0;
 	
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
 	
-	if (ZEND_NUM_ARGS()) {
-	    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|l", &val, &vlen, &codepage, &clen, &len) != SUCCESS) {
-	        return;
-	    }
+	if (!ZEND_NUM_ARGS()) {
+	    ustring->val = new UnicodeString();
+	    ustring->codepage = 
+	        STR_COPY(UG(codepage));
+	    return;
 	}
 	
-	switch (ZEND_NUM_ARGS()) {
-	    case 3:
-	    case 2:
-	        ustring->val = new UnicodeString(val, len ? len : vlen, codepage);
-	        ustring->codepage = STR_INIT(codepage, clen, 0);
-	    break;
-	    
-	    case 0:
-	        ustring->val = new UnicodeString();
-	        ustring->codepage = NULL;
-	    break;
-	}
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &val, &vlen, &codepage, &clen) != SUCCESS) {
+        return;
+    }
+	
+	if (codepage) {
+	    ustring->codepage = STR_INIT(codepage, clen, 0);
+	} else ustring->codepage = STR_COPY(UG(codepage));
+	
+	ustring->val = new UnicodeString(val, vlen, ustring->codepage->val);
 }
 /* }}} */
 
@@ -439,12 +437,39 @@ PHP_METHOD(UString, charAt) {
     
 } /* }}} */
 
+/* {{{ proto void UString::setDefaultCodepage(string codepage) */
+PHP_METHOD(UString, setDefaultCodepage) {
+    char *codepage = NULL;
+    int32_t clen = 0;
+    
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &codepage, &clen) != SUCCESS) {
+        return;
+    }
+    
+    STR_RELEASE(UG(codepage));
+    
+    UG(codepage) = STR_INIT(codepage, clen, 0);
+} /* }}} */
+
+/* {{{ proto string UString::getDefaultCodepage(void) */
+PHP_METHOD(UString, getDefaultCodepage) {
+    char *codepage = NULL;
+    int32_t clen = 0;
+    
+    if (zend_parse_parameters_none() != SUCCESS) {
+        return;
+    }
+    
+    RETURN_STR(STR_COPY(UG(codepage)));
+} /* }}} */
+
 /* {{{ */
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_no_arginfo, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring__construct_arginfo, 0, 0, 1)
     ZEND_ARG_INFO(0, value)
+    ZEND_ARG_INFO(0, codepage)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_std_arginfo, 0, 0, 1)
@@ -464,6 +489,10 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_charAt_arginfo, 0, 0, 1)   
     ZEND_ARG_INFO(0, index)
+ZEND_END_ARG_INFO() 
+
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)   
+    ZEND_ARG_INFO(0, codepage)
 ZEND_END_ARG_INFO() /* }}} */
 
 /* {{{ */
@@ -482,6 +511,8 @@ zend_function_entry php_ustring_methods[] = {
     PHP_ME(UString, append, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, replace, php_ustring_replace_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
+    PHP_ME(UString, setDefaultCodepage, php_ustring_setDefaultCodepage_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+    PHP_ME(UString, getDefaultCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
     PHP_FE_END
 }; /* }}} */
 
@@ -604,6 +635,11 @@ static inline zend_object* php_ustring_create(zend_class_entry *ce TSRMLS_DC) {
 	return &ustring->std;
 } /* }}} */
 
+/* {{{ */
+static inline void php_ustring_globals_ctor(zend_ustring_globals  *ug TSRMLS_DC) {
+    ug->codepage = NULL;
+} /* }}} */
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ustring)
@@ -611,6 +647,8 @@ PHP_MINIT_FUNCTION(ustring)
     zend_class_entry ce;
     
 	INIT_CLASS_ENTRY(ce, "UString", php_ustring_methods);
+	
+	ZEND_INIT_MODULE_GLOBALS(ustring, php_ustring_globals_ctor, NULL);
 	
 	ce_UString = zend_register_internal_class(&ce TSRMLS_CC);
 	ce_UString->create_object = php_ustring_create;
@@ -634,6 +672,8 @@ PHP_MINIT_FUNCTION(ustring)
  */
 PHP_RINIT_FUNCTION(ustring)
 {
+    UG(codepage) = STR_INIT("UTF-8", sizeof("UTF-8")-1, 0);
+    
 	return SUCCESS;
 }
 /* }}} */
@@ -643,6 +683,8 @@ PHP_RINIT_FUNCTION(ustring)
  */
 PHP_RSHUTDOWN_FUNCTION(ustring)
 {
+    STR_RELEASE(UG(codepage));
+    
 	return SUCCESS;
 }
 /* }}} */
@@ -665,8 +707,8 @@ zend_module_entry ustring_module_entry = {
 	NULL,
 	PHP_MINIT(ustring),
 	NULL,
-	NULL,
-	NULL,
+	PHP_RINIT(ustring),
+	PHP_RSHUTDOWN(ustring),
 	PHP_MINFO(ustring),
 	PHP_USTRING_VERSION,
 	STANDARD_MODULE_PROPERTIES

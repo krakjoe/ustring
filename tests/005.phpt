@@ -6,10 +6,10 @@ Test UString::lastIndexOf
 <?php
 $std = "こんにちは世界";
 
-$string = new UString($std, "UTF-8");
+$string = new UString($std);
 
 var_dump($string->lastIndexOf("界"));
-var_dump($string->lastIndexOf(new UString("界", "UTF-8")));
+var_dump($string->lastIndexOf(new UString("界")));
 ?>
 --EXPECT--
 int(6)

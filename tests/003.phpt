@@ -6,10 +6,10 @@ Test UString::endsWith
 <?php
 $std = "こんにちは世界";
 
-$string = new UString($std, "UTF-8");
+$string = new UString($std);
 
 var_dump($string->endsWith("界"));
-var_dump($string->endsWith(new UString("界", "UTF-8")));
+var_dump($string->endsWith(new UString("界")));
 ?>
 --EXPECT--
 bool(true)

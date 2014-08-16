@@ -6,7 +6,7 @@ Test UString::replace
 <?php
 $std = "こんにちは世界 歓迎";
 
-$string = new UString($std, "UTF-8");
+$string = new UString($std);
 
 $string->replace("歓迎", "welcome :)");
 

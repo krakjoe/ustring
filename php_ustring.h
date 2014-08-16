@@ -43,10 +43,14 @@ extern "C" {
 }
 
 #ifdef ZTS
-#define USTRING_G(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
+#define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
 #else
-#define USTRING_G(v) (ustring_globals.v)
+#define UG(v) (ustring_globals.v)
 #endif
+
+ZEND_BEGIN_MODULE_GLOBALS(ustring)
+    zend_string *codepage;
+ZEND_END_MODULE_GLOBALS(ustring)
 
 #endif	/* PHP_USTRING_H */
 

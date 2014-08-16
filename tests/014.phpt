@@ -6,7 +6,7 @@ Test UString::charAt
 <?php
 $std = "こんにちは世界";
 
-$string = new UString($std, "UTF-8");
+$string = new UString($std);
 
 var_dump((string)$string->charAt(1));
 ?>

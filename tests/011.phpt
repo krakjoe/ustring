@@ -6,7 +6,7 @@ Test UString::append
 <?php
 $std = "こんにちは世界";
 
-$string = new UString($std, "UTF-8");
+$string = new UString($std);
 
 var_dump($string->append(" 歓迎"));
 ?>

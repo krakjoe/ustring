@@ -6,7 +6,7 @@ The following Unicode String support for PHP7 ...
 ```php
 <?php
 abstract class UString {
-    public function __construct([string $string, string $codepage [, int $length]]);
+    public function __construct([string $string [, string $codepage]]);
     
     /** 
     * @return int
@@ -72,6 +72,16 @@ abstract class UString {
     * @return UString
     **/
     public function charAt(int $index);
+    
+    /**
+    * @return string
+    **/
+    public static function getDefaultCodepage();
+    
+    /**
+    * @return void
+    **/
+    public static function setDefaultCodepage(string $codepage);
 }
 ?>
 ```

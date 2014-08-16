@@ -13,4 +13,4 @@ $string->reverse();
 var_dump((string) $string);
 ?>
 --EXPECTF--
-string(7) "%s"
+string(21) "%s"

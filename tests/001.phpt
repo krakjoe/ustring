@@ -13,4 +13,4 @@ var_dump(strlen($string));
 ?>
 --EXPECT--
 int(7)
-int(7)
+int(21)

@@ -540,7 +540,7 @@ static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC
     ustring = PHP_USTRING_FETCH(zread);
     
     length = ustring->val->extract
-        (0, ustring->val->length(), NULL, length);
+        (0, ustring->val->length(), NULL, length, ustring->codepage->val);
     
     if (!length) {
         return FAILURE;

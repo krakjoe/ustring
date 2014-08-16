@@ -6,7 +6,7 @@ The following Unicode String support for PHP ...
 ```php
 <?php
 abstract class UString {
-    public function __construct([string $string [, string $codepage [, int $length]]]);
+    public function __construct([string $string, string $codepage [, int $length]]);
     
     /** 
     * @return int
@@ -67,6 +67,11 @@ abstract class UString {
     * @return int
     **/
     public function lastIndexOf(UString $needle [, int $start [, int $length]]);
+    
+    /**
+    * @return UString
+    **/
+    public function charAt(int $index);
 }
 ?>
 ```

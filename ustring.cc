@@ -552,8 +552,9 @@ static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC
     ustring->val->extract(
         0,
         ustring->val->length(),
-        (char*) Z_STRVAL_P(zwrite), 
-        Z_STRLEN_P(zwrite));
+        (char*) Z_STRVAL_P(zwrite),
+        Z_STRLEN_P(zwrite), 
+        ustring->codepage->val);
 
     Z_STRVAL_P(zwrite)[Z_STRLEN_P(zwrite)] = 0;
     

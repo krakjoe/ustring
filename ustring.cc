@@ -531,25 +531,32 @@ static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC
 
 static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2 TSRMLS_DC) {
     switch (opcode) {
-        case ZEND_CONCAT:
+        case ZEND_CONCAT: {
             php_ustring_t *uresult;
             php_ustring_t *uop1, *uop2;
             
-            object_init_ex(result, ce_UString);
+            if (op1 != result) {
+                object_init_ex(result, ce_UString);
             
-            uresult = PHP_USTRING_FETCH(result);
-            uresult->val = new UnicodeString();
-            
-            switch (Z_TYPE_P(op1)) {
-                case IS_STRING: {
-                    uresult->val->append(UnicodeString(Z_STRVAL_P(op1), Z_STRLEN_P(op1)));
-                } break;
+                uresult = PHP_USTRING_FETCH(result);
+                uresult->val = new UnicodeString();
                 
-                case IS_OBJECT: {
-                    uop1 = PHP_USTRING_FETCH(op1);
+                switch (Z_TYPE_P(op1)) {
+                    case IS_STRING: {
+                        uresult->val->append(UnicodeString(Z_STRVAL_P(op1), Z_STRLEN_P(op1)));
+                    } break;
                     
-                    uresult->val->append(*uop1->val);
-                } break;
+                    case IS_OBJECT: {
+                        uop1 = PHP_USTRING_FETCH(op1);
+                        
+                        uresult->val->append(*uop1->val);
+                    } break;
+                    
+                    default:
+                        return FAILURE;
+                }
+            } else {
+                uresult = PHP_USTRING_FETCH(result);
             }
             
             switch (Z_TYPE_P(op2)) {
@@ -562,10 +569,13 @@ static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1
                     
                     uresult->val->append(*uop2->val);
                 } break;
+                
+                default:
+                    return FAILURE;
             }
             
             return SUCCESS;
-        break;
+        } break;
     }
     
     return FAILURE;

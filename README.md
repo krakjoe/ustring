@@ -76,6 +76,11 @@ abstract class UString {
     /**
     * @return string
     **/
+    public function getCodepage(void);
+    
+    /**
+    * @return string
+    **/
     public static function getDefaultCodepage();
     
     /**

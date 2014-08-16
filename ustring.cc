@@ -39,6 +39,13 @@ typedef struct _php_ustring_t {
     zend_object   std;
 } php_ustring_t;
 
+typedef struct _php_ustring_iterator_t {
+    zend_object_iterator zit;
+    zval zobject;
+    zval zdata;
+    int32_t position;
+} php_ustring_iterator_t;
+
 #define PHP_USTRING_FETCH(o) (php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std))
 
 zend_class_entry *ce_UString;
@@ -463,6 +470,17 @@ PHP_METHOD(UString, getDefaultCodepage) {
     RETURN_STR(STR_COPY(UG(codepage)));
 } /* }}} */
 
+/* {{{ proto string UString::getCodepage(void) */
+PHP_METHOD(UString, getCodepage) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+    
+    if (zend_parse_parameters_none() != SUCCESS) {
+        return;
+    }
+    
+    RETURN_STR(ustring->codepage);
+} /* }}} */
+
 /* {{{ */
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_no_arginfo, 0, 0, 0)
 ZEND_END_ARG_INFO()
@@ -511,6 +529,7 @@ zend_function_entry php_ustring_methods[] = {
     PHP_ME(UString, append, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, replace, php_ustring_replace_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
+    PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(UString, setDefaultCodepage, php_ustring_setDefaultCodepage_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
     PHP_ME(UString, getDefaultCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
     PHP_FE_END
@@ -694,6 +713,87 @@ static inline void php_ustring_write(zval *object, zval *offset, zval *zvalue TS
         zval_ptr_dtor(offset);
 } /* }}} */
 
+/* {{{ */
+static inline void php_ustring_iterator_dtor(zend_object_iterator* iterator TSRMLS_DC) {
+    php_ustring_iterator_t *uit = (php_ustring_iterator_t*) iterator;
+    
+    zval_ptr_dtor(&uit->zobject);
+    
+    if (Z_TYPE(uit->zdata) != IS_UNDEF) {
+        zval_ptr_dtor(&uit->zdata);
+        ZVAL_UNDEF(&uit->zdata);
+    }
+    
+    zend_iterator_dtor(iterator TSRMLS_CC);
+} /* }}} */
+
+/* {{{ */
+static inline int php_ustring_iterator_validate(zend_object_iterator* iterator TSRMLS_DC) {
+    php_ustring_iterator_t *uit = 
+        (php_ustring_iterator_t*) iterator;
+    php_ustring_t *pstring = PHP_USTRING_FETCH(&uit->zobject);
+    
+    return (uit->position < pstring->val->length()) ? SUCCESS : FAILURE;
+} /* }}} */
+
+/* {{{ */
+static inline zval* php_ustring_iterator_current_data(zend_object_iterator* iterator TSRMLS_DC) {
+    php_ustring_iterator_t *uit = 
+        (php_ustring_iterator_t*) iterator;
+    php_ustring_t *ustring, 
+                  *pstring = PHP_USTRING_FETCH(&uit->zobject);
+    
+    object_init_ex(&uit->zdata, ce_UString);
+    
+    ustring = PHP_USTRING_FETCH(&uit->zdata);
+    ustring->codepage = 
+        STR_COPY(pstring->codepage);
+    ustring->val = new UnicodeString(*pstring->val, uit->position, 1);
+    
+    return &uit->zdata;
+} /* }}} */
+
+/* {{{ */
+static inline void php_ustring_iterator_current_key(zend_object_iterator* iterator, zval *key TSRMLS_DC) {
+    php_ustring_iterator_t *uit = 
+        (php_ustring_iterator_t*) iterator;
+    
+    ZVAL_LONG(key, uit->position);
+} /* }}} */
+
+/* {{{ */
+static inline void php_ustring_iterator_move_forward(zend_object_iterator* iterator TSRMLS_DC) {
+    php_ustring_iterator_t *uit = 
+        (php_ustring_iterator_t*) iterator;
+    
+    uit->position++;
+} /* }}} */
+
+/* {{{ */
+zend_object_iterator_funcs php_ustring_iterator_funcs = {
+    php_ustring_iterator_dtor,
+    php_ustring_iterator_validate,
+    php_ustring_iterator_current_data,
+    php_ustring_iterator_current_key,
+    php_ustring_iterator_move_forward,
+    NULL  
+}; /* }}} */
+
+/* {{{ */
+static inline zend_object_iterator* php_ustring_iterator(zend_class_entry *ce, zval *zobject, int by_ref TSRMLS_DC) {
+    php_ustring_iterator_t *uit = (php_ustring_iterator_t*) emalloc(sizeof(php_ustring_iterator_t));
+    
+    zend_iterator_init((zend_object_iterator*)uit TSRMLS_CC);
+    
+    uit->zit.funcs = &php_ustring_iterator_funcs;
+    uit->position = 0;
+     
+    ZVAL_COPY(&uit->zobject, zobject);
+    ZVAL_UNDEF(&uit->zdata);
+    
+    return (zend_object_iterator*) uit;
+} /* }}} */
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ustring)
@@ -706,6 +806,7 @@ PHP_MINIT_FUNCTION(ustring)
 	
 	ce_UString = zend_register_internal_class(&ce TSRMLS_CC);
 	ce_UString->create_object = php_ustring_create;
+	ce_UString->get_iterator = php_ustring_iterator;
 	
 	memcpy(
 		&php_ustring_handlers,

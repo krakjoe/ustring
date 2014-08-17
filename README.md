@@ -72,6 +72,11 @@ abstract class UString {
     * @return UString
     **/
     public function charAt(int $index);
+
+    /**
+    * @return void
+    **/
+    public function insert(int $position, UString $text [, int $start [, int $length]])
     
     /**
     * @return string

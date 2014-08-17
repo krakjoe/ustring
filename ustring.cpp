@@ -226,55 +226,23 @@ PHP_METHOD(UString, truncate) {
 	RETURN_LONG(ustring->val->length());
 } /* }}} */
 
-/* {{{ proto int UString::append(string data [, int start [, int length]]) */
+/* {{{ proto int UString::append(string data) */
 PHP_METHOD(UString, append) {
 	zval *zdata;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *udata;
-	long start = -1,
-		 length = -1;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zdata, &start, &length) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zdata) != SUCCESS) {
 		return;
 	}
 
 	switch (Z_TYPE_P(zdata)) {
-		case IS_STRING: {
-			UnicodeString data = UnicodeString(Z_STRVAL_P(zdata), (int32_t) Z_STRLEN_P(zdata), ustring->codepage->val);
-
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					ustring->val->append(data);
-				break;
-
-				case 2:
-					ustring->val->append(data, (int32_t)start, data.length() - start);
-				break;
-
-				case 3:
-					ustring->val->append(data, (int32_t)start, (int32_t)length - start);
-				break;
-			}
-		}
+		case IS_STRING: 
+	        ustring->val->append(UnicodeString(Z_STRVAL_P(zdata), (int32_t) Z_STRLEN_P(zdata), ustring->codepage->val));
 		break;
 
-		case IS_OBJECT: {
-			udata = PHP_USTRING_FETCH(zdata);
-
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					ustring->val->append(*udata->val);
-				break;
-
-				case 2:
-					ustring->val->append(*udata->val, (int32_t)start, udata->val->length() - start);
-				break;
-
-				case 3:
-					ustring->val->append(*udata->val, (int32_t)start, (int32_t)length - start);
-				break;
-			}
-		}
+		case IS_OBJECT: 
+		    ustring->val->append(*(PHP_USTRING_FETCH(zdata))->val);
 		break;
 	}
 
@@ -357,19 +325,17 @@ PHP_METHOD(UString, charAt) {
 		uchar->val = new UnicodeString(&found);
 		uchar->codepage = STR_COPY(ustring->codepage);
 	}
-
 } /* }}} */
 
-/* {{{ proto void UString::insert(int position, UString text [, int start [, int length]]) */
-PHP_METHOD(UString, insert) {
+/* {{{ proto void UString::replaceSlice(UString text [, int start [, int length]]) */
+PHP_METHOD(UString, replaceSlice) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	long position = -1,
-			start    = -1,
-			length   = -1;
+	long start    = -1,
+		 length   = -1;
 	zval    *ztext;
 	UnicodeString utext;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz|ll", &position, &ztext, &start, &length) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &ztext, &start, &length) != SUCCESS) {
 		return;
 	}
 
@@ -394,8 +360,35 @@ PHP_METHOD(UString, insert) {
 		start = 0;
 	if (length == -1)
 		length = utext.length() - start;
+    
+    ustring->val->replace(start, length, utext, 0, utext.length());
+} /* }}} */
 
-	ustring->val->insert(position, utext, start, length);
+/* {{{ proto bool UString::contains(UString text) */
+PHP_METHOD(UString, contains) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+    zval *ztext;
+    UnicodeString utext;
+    
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &ztext) != SUCCESS) {
+        return;
+    }
+    
+    switch (Z_TYPE_P(ztext)) {
+        case IS_STRING:
+            utext = UnicodeString(Z_STRVAL_P(ztext), (int32_t) Z_STRLEN_P(ztext), ustring->codepage->val);
+        break;
+        
+        case IS_OBJECT:
+            if (!instanceof_function(Z_OBJCE_P(ztext), ce_UString TSRMLS_CC)) {
+                return;
+            }
+            
+            utext = *(PHP_USTRING_FETCH(ztext))->val;
+        break;
+    }
+    
+    RETURN_BOOL(ustring->val->indexOf(utext) >= 0);
 } /* }}} */
 
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
@@ -444,8 +437,6 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_std_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, needle)
-	ZEND_ARG_INFO(0, start)
-	ZEND_ARG_INFO(0, length)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_truncate_arginfo, 0, 0, 1)
@@ -461,11 +452,14 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_charAt_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, index)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(php_ustring_insert_arginfo, 0, 0, 2)
-	ZEND_ARG_INFO(0, position)
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_replaceSlice_arginfo, 0, 0, 2)
 	ZEND_ARG_INFO(0, text)
 	ZEND_ARG_INFO(0, start)
 	ZEND_ARG_INFO(0, length)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_contains_arginfo, 0, 0, 1)
+	ZEND_ARG_INFO(0, text)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)
@@ -487,8 +481,9 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, truncate, php_ustring_truncate_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, append, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, replace, php_ustring_replace_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, replaceSlice, php_ustring_replaceSlice_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, contains, php_ustring_contains_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
-	PHP_ME(UString, insert, php_ustring_insert_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, setDefaultCodepage, php_ustring_setDefaultCodepage_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(UString, getDefaultCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)

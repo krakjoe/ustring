@@ -46,7 +46,17 @@ abstract class UString {
     /** 
     * @return int new length
     **/
-    public function replace(UString $string, UString $replace);
+    public function replace(UString $search, UString $replace);
+    
+    /**
+    * @return void
+    **/
+    public function replaceSlice(UString $text [, int $start [, int $length]])
+    
+    /**
+    * @return bool
+    **/
+    public function contains(UString $text);
     
     /**
     * @return bool
@@ -72,11 +82,6 @@ abstract class UString {
     * @return UString
     **/
     public function charAt(int $index);
-
-    /**
-    * @return void
-    **/
-    public function insert(int $position, UString $text [, int $start [, int $length]])
     
     /**
     * @return string

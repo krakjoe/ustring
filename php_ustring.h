@@ -21,6 +21,8 @@
 #ifndef PHP_USTRING_H
 #define PHP_USTRING_H
 
+#include <php.h>
+
 extern zend_module_entry ustring_module_entry;
 #define phpext_ustring_ptr &ustring_module_entry
 
@@ -34,13 +36,9 @@ extern zend_module_entry ustring_module_entry;
 #	define PHP_USTRING_API
 #endif
 
-extern "C" {
-#include "php.h"
-
 #ifdef ZTS
 #    include "TSRM.h"
 #endif
-}
 
 #ifdef ZTS
 #define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)

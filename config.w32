@@ -8,7 +8,7 @@ if (PHP_USTRING != "no") {
 	}
 	ADD_FLAG("LIBS_USTRING", "icudt.lib icuin.lib icuio.lib icule.lib iculx.lib icutu.lib icuuc.lib");
 	ADD_FLAG("CFLAGS_USTRING", "/EHsc /Zc:wchar_t");
-	var sources = "ustring.cc";
+	var sources = "ustring.cpp";
 	AC_DEFINE("PHP_EXPORTS", 1);
 	EXTENSION("ustring", sources);
 }

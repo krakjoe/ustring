@@ -10,7 +10,11 @@ $string = new UString($std);
 
 var_dump($string->startsWith("こ"));
 var_dump($string->startsWith(new UString("こ")));
+var_dump($string->startsWith("aこ", 2));
+var_dump($string->startsWith(new UString("aこ"), 2));
 ?>
 --EXPECT--
+bool(true)
+bool(true)
 bool(true)
 bool(true)

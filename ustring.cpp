@@ -109,15 +109,15 @@ PHP_METHOD(UString, startsWith) {
 
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
+			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t)Z_STRLEN_P(zneedle), ustring->codepage->val);
 
 			switch (ZEND_NUM_ARGS()) {
 				case 1:
 					RETURN_BOOL(ustring->val->startsWith(needle));
 				case 2:
-					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, needle.length()));
+					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, needle.length() - start));
 				case 3:
-					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, (int32_t)length));
+					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -129,9 +129,9 @@ PHP_METHOD(UString, startsWith) {
 				case 1:
 					RETURN_BOOL(ustring->val->startsWith(*uneedle->val));
 				case 2:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, uneedle->val->length()));
+					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
 				case 3:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, (int32_t)length));
+					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -152,15 +152,15 @@ PHP_METHOD(UString, endsWith) {
 
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
+			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
 
 			switch (ZEND_NUM_ARGS()) {
 				case 1:
 					RETURN_BOOL(ustring->val->endsWith(needle));
 				case 2:
-					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, needle.length()));
+					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, needle.length() - start));
 				case 3:
-					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, (int32_t)length));
+					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -172,9 +172,9 @@ PHP_METHOD(UString, endsWith) {
 				case 1:
 					RETURN_BOOL(ustring->val->endsWith(*uneedle->val));
 				case 2:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, uneedle->val->length()));
+					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
 				case 3:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, (int32_t)length));
+					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -195,15 +195,15 @@ PHP_METHOD(UString, indexOf) {
 
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
+			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
 
 			switch (ZEND_NUM_ARGS()) {
 				case 1:
 					RETURN_LONG(ustring->val->indexOf(needle));
 				case 2:
-					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, needle.length()));
+					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, needle.length() - start));
 				case 3:
-					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, (int32_t)length));
+					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -215,9 +215,9 @@ PHP_METHOD(UString, indexOf) {
 				case 1:
 					RETURN_LONG(ustring->val->indexOf(*uneedle->val));
 				case 2:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, uneedle->val->length()));
+					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
 				case 3:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, (int32_t)length));
+					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -238,15 +238,15 @@ PHP_METHOD(UString, lastIndexOf) {
 
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
+			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
 
 			switch (ZEND_NUM_ARGS()) {
 				case 1:
 					RETURN_LONG(ustring->val->lastIndexOf(needle));
 				case 2:
-					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, needle.length()));
+					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, needle.length() - start));
 				case 3:
-					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, (int32_t)length));
+					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -258,9 +258,9 @@ PHP_METHOD(UString, lastIndexOf) {
 				case 1:
 					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val));
 				case 2:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, uneedle->val->length()));
+					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
 				case 3:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, (int32_t)length));
+					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, (int32_t)length - start));
 			}
 		}
 		break;
@@ -339,7 +339,7 @@ PHP_METHOD(UString, append) {
 
 	switch (Z_TYPE_P(zdata)) {
 		case IS_STRING: {
-			UnicodeString data = UnicodeString(Z_STRVAL_P(zdata), Z_STRLEN_P(zdata), ustring->codepage->val);
+			UnicodeString data = UnicodeString(Z_STRVAL_P(zdata), (int32_t) Z_STRLEN_P(zdata), ustring->codepage->val);
 
 			switch (ZEND_NUM_ARGS()) {
 				case 1:
@@ -347,11 +347,11 @@ PHP_METHOD(UString, append) {
 				break;
 
 				case 2:
-					ustring->val->append(data, (int32_t)start, data.length());
+					ustring->val->append(data, (int32_t)start, data.length() - start);
 				break;
 
 				case 3:
-					ustring->val->append(data, (int32_t)start, (int32_t)length);
+					ustring->val->append(data, (int32_t)start, (int32_t)length - start);
 				break;
 			}
 		}
@@ -366,11 +366,11 @@ PHP_METHOD(UString, append) {
 				break;
 
 				case 2:
-					ustring->val->append(*udata->val, (int32_t)start, udata->val->length());
+					ustring->val->append(*udata->val, (int32_t)start, udata->val->length() - start);
 				break;
 
 				case 3:
-					ustring->val->append(*udata->val, (int32_t)start, (int32_t)length);
+					ustring->val->append(*udata->val, (int32_t)start, (int32_t)length - start);
 				break;
 			}
 		}
@@ -392,11 +392,11 @@ PHP_METHOD(UString, replace) {
 
 	switch (Z_TYPE_P(zsearch)) {
 		case IS_STRING: {
-			search = UnicodeString(Z_STRVAL_P(zsearch), Z_STRLEN_P(zsearch), ustring->codepage->val);
+			search = UnicodeString(Z_STRVAL_P(zsearch), (int32_t) Z_STRLEN_P(zsearch), ustring->codepage->val);
 
 			switch(Z_TYPE_P(zreplace)) {
 				case IS_STRING:
-					replace = UnicodeString(Z_STRVAL_P(zreplace), Z_STRLEN_P(zreplace), ustring->codepage->val);
+					replace = UnicodeString(Z_STRVAL_P(zreplace), (int32_t) Z_STRLEN_P(zreplace), ustring->codepage->val);
 				break;
 
 				case IS_OBJECT: {
@@ -418,7 +418,7 @@ PHP_METHOD(UString, replace) {
 				break;
 
 				case IS_STRING:
-					replace = UnicodeString(Z_STRVAL_P(zreplace), Z_STRLEN_P(zreplace), ustring->codepage->val);
+					replace = UnicodeString(Z_STRVAL_P(zreplace), (int32_t) Z_STRLEN_P(zreplace), ustring->codepage->val);
 				break;
 
 				default:
@@ -474,7 +474,7 @@ PHP_METHOD(UString, insert) {
 
 	switch (Z_TYPE_P(ztext)) {
 		case IS_STRING:
-			utext = UnicodeString(Z_STRVAL_P(ztext), Z_STRLEN_P(ztext), ustring->codepage->val);
+			utext = UnicodeString(Z_STRVAL_P(ztext), (int32_t) Z_STRLEN_P(ztext), ustring->codepage->val);
 			break;
 
 		case IS_OBJECT:
@@ -618,7 +618,7 @@ static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC
 		0,
 		ustring->val->length(),
 		(char*) Z_STRVAL_P(zwrite),
-		Z_STRLEN_P(zwrite),
+		(int32_t) Z_STRLEN_P(zwrite),
 		ustring->codepage->val);
 
 	Z_STRVAL_P(zwrite)[Z_STRLEN_P(zwrite)] = 0;

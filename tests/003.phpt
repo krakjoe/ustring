@@ -10,7 +10,11 @@ $string = new UString($std);
 
 var_dump($string->endsWith("界"));
 var_dump($string->endsWith(new UString("界")));
+var_dump($string->endsWith("界b", 1, 1));
+var_dump($string->endsWith(new UString("界b"), 1, 1));
 ?>
 --EXPECT--
+bool(true)
+bool(true)
 bool(true)
 bool(true)

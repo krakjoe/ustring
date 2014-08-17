@@ -391,6 +391,37 @@ PHP_METHOD(UString, contains) {
     RETURN_BOOL(ustring->val->indexOf(utext) >= 0);
 } /* }}} */
 
+/* {{{ proto UString[] UString::chunk(int $length) */
+PHP_METHOD(UString, chunk) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+    long length = 0;
+    int32_t position = 0;
+    
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
+        return;
+    }
+    
+    array_init(return_value);
+    
+    if (!length) 
+        length = 1;
+    
+    while (position < ustring->val->length()) {
+        zval chunked;
+        php_ustring_t *uchunk;
+        
+        object_init_ex(&chunked, ce_UString);
+        
+        uchunk = PHP_USTRING_FETCH(&chunked);
+        uchunk->codepage = STR_COPY(ustring->codepage);
+        uchunk->val = new UnicodeString(*ustring->val, position, length);
+        
+        add_next_index_zval(return_value, &chunked);
+        
+        position += length;
+    }
+} /* }}} */
+
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
 PHP_METHOD(UString, setDefaultCodepage) {
 	char *codepage = NULL;
@@ -462,6 +493,11 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_contains_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, text)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_chunk_arginfo, 0, 0, 1)
+	ZEND_ARG_INFO(0, length)
+ZEND_END_ARG_INFO()
+
+
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, codepage)
 ZEND_END_ARG_INFO() /* }}} */
@@ -483,6 +519,7 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, replace, php_ustring_replace_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, replaceSlice, php_ustring_replaceSlice_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, contains, php_ustring_contains_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, chunk, php_ustring_chunk_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, setDefaultCodepage, php_ustring_setDefaultCodepage_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)

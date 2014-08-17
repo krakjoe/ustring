@@ -79,6 +79,11 @@ abstract class UString {
     public function lastIndexOf(UString $needle);
     
     /**
+    * @return UString[]
+    **/
+    public function chunk(int $length);
+    
+    /**
     * @return UString
     **/
     public function charAt(int $index);

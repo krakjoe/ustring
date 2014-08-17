@@ -55,28 +55,28 @@ zend_object_handlers php_ustring_handlers;
 /* {{{ proto UString UString::__contruct([string arg , [string codepage = "utf-8"]]) */
 PHP_METHOD(UString, __construct)
 {
-	char *val = NULL, 
+	char *val = NULL,
 	     *codepage = NULL;
 	long  vlen = 0,
 	      clen = 0;
-	
+
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	
+
 	if (!ZEND_NUM_ARGS()) {
 	    ustring->val = new UnicodeString();
-	    ustring->codepage = 
+	    ustring->codepage =
 	        STR_COPY(UG(codepage));
 	    return;
 	}
-	
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &val, &vlen, &codepage, &clen) != SUCCESS) {
         return;
     }
-	
+
 	if (codepage) {
 	    ustring->codepage = STR_INIT(codepage, clen, 0);
 	} else ustring->codepage = STR_COPY(UG(codepage));
-	
+
 	ustring->val = new UnicodeString(val, vlen, ustring->codepage->val);
 }
 /* }}} */
@@ -84,11 +84,11 @@ PHP_METHOD(UString, __construct)
 /* {{{ proto int UString::length(void) */
 PHP_METHOD(UString, length) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     RETURN_LONG(ustring->val->length());
 } /* }}} */
 
@@ -97,9 +97,9 @@ PHP_METHOD(UString, startsWith) {
     zval *zneedle;
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
                   *uneedle;
-    int32_t start = -1, 
+    int32_t start = -1,
             length = -1;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
         return;
     }
@@ -107,7 +107,7 @@ PHP_METHOD(UString, startsWith) {
     switch (Z_TYPE_P(zneedle)) {
         case IS_STRING: {
             UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
-            
+
             switch (ZEND_NUM_ARGS()) {
                 case 1:
                     RETURN_BOOL(ustring->val->startsWith(needle));
@@ -117,7 +117,7 @@ PHP_METHOD(UString, startsWith) {
                     RETURN_BOOL(ustring->val->startsWith(needle, start, length));
             }
         } break;
-        
+
         case IS_OBJECT: {
             uneedle = PHP_USTRING_FETCH(zneedle);
 
@@ -138,9 +138,9 @@ PHP_METHOD(UString, endsWith) {
     zval *zneedle;
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
                   *uneedle;
-    int32_t start = -1, 
+    int32_t start = -1,
             length = -1;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
         return;
     }
@@ -148,7 +148,7 @@ PHP_METHOD(UString, endsWith) {
     switch (Z_TYPE_P(zneedle)) {
         case IS_STRING: {
             UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
-            
+
             switch (ZEND_NUM_ARGS()) {
                 case 1:
                     RETURN_BOOL(ustring->val->endsWith(needle));
@@ -158,7 +158,7 @@ PHP_METHOD(UString, endsWith) {
                     RETURN_BOOL(ustring->val->endsWith(needle, start, length));
             }
         } break;
-        
+
         case IS_OBJECT: {
             uneedle = PHP_USTRING_FETCH(zneedle);
 
@@ -179,9 +179,9 @@ PHP_METHOD(UString, indexOf) {
     zval *zneedle;
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
                   *uneedle;
-    int32_t start = -1, 
+    int32_t start = -1,
             length = -1;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
         return;
     }
@@ -189,7 +189,7 @@ PHP_METHOD(UString, indexOf) {
     switch (Z_TYPE_P(zneedle)) {
         case IS_STRING: {
             UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
-            
+
             switch (ZEND_NUM_ARGS()) {
                 case 1:
                     RETURN_LONG(ustring->val->indexOf(needle));
@@ -199,7 +199,7 @@ PHP_METHOD(UString, indexOf) {
                     RETURN_LONG(ustring->val->indexOf(needle, start, length));
             }
         } break;
-        
+
         case IS_OBJECT: {
             uneedle = PHP_USTRING_FETCH(zneedle);
 
@@ -220,9 +220,9 @@ PHP_METHOD(UString, lastIndexOf) {
     zval *zneedle;
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
                   *uneedle;
-    int32_t start = -1, 
+    int32_t start = -1,
             length = -1;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
         return;
     }
@@ -230,7 +230,7 @@ PHP_METHOD(UString, lastIndexOf) {
     switch (Z_TYPE_P(zneedle)) {
         case IS_STRING: {
             UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), Z_STRLEN_P(zneedle), ustring->codepage->val);
-            
+
             switch (ZEND_NUM_ARGS()) {
                 case 1:
                     RETURN_LONG(ustring->val->lastIndexOf(needle));
@@ -240,7 +240,7 @@ PHP_METHOD(UString, lastIndexOf) {
                     RETURN_LONG(ustring->val->lastIndexOf(needle, start, length));
             }
         } break;
-        
+
         case IS_OBJECT: {
             uneedle = PHP_USTRING_FETCH(zneedle);
 
@@ -259,44 +259,44 @@ PHP_METHOD(UString, lastIndexOf) {
 /* {{{ proto void UString::toLower(void) */
 PHP_METHOD(UString, toLower) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     ustring->val->toLower();
 } /* }}} */
 
 /* {{{ proto void UString::toUpper(void) */
 PHP_METHOD(UString, toUpper) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     ustring->val->toUpper();
 } /* }}} */
 
 /* {{{ proto void UString::reverse(void) */
 PHP_METHOD(UString, reverse) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     ustring->val->reverse();
 } /* }}} */
 
 /* {{{ proto void UString::trim(void) */
 PHP_METHOD(UString, trim) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     ustring->val->trim();
 } /* }}} */
 
@@ -304,11 +304,11 @@ PHP_METHOD(UString, trim) {
 PHP_METHOD(UString, truncate) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
     int32_t length = -1;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
         return;
     }
-    
+
     ustring->val->truncate(length);
 
     RETURN_LONG(ustring->val->length());
@@ -319,9 +319,9 @@ PHP_METHOD(UString, append) {
     zval *zdata;
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
                   *udata;
-    int32_t start = -1, 
+    int32_t start = -1,
             length = -1;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zdata, &start, &length) != SUCCESS) {
         return;
     }
@@ -329,22 +329,22 @@ PHP_METHOD(UString, append) {
     switch (Z_TYPE_P(zdata)) {
         case IS_STRING: {
             UnicodeString data = UnicodeString(Z_STRVAL_P(zdata), Z_STRLEN_P(zdata), ustring->codepage->val);
-            
+
             switch (ZEND_NUM_ARGS()) {
                 case 1:
                     ustring->val->append(data);
                 break;
-                   
+
                 case 2:
                     ustring->val->append(data, start, data.length());
                 break;
-                    
+
                 case 3:
                     ustring->val->append(data, start, length);
                 break;
             }
         } break;
-        
+
         case IS_OBJECT: {
             udata = PHP_USTRING_FETCH(zdata);
 
@@ -352,7 +352,7 @@ PHP_METHOD(UString, append) {
                 case 1:
                     ustring->val->append(*udata->val);
                 break;
-                
+
                 case 2:
                     ustring->val->append(*udata->val, start, udata->val->length());
                 break;
@@ -363,7 +363,7 @@ PHP_METHOD(UString, append) {
             }
         } break;
     }
-    
+
     RETURN_LONG(ustring->val->length());
 } /* }}} */
 
@@ -372,7 +372,7 @@ PHP_METHOD(UString, replace) {
     zval *zsearch, *zreplace;
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
     UnicodeString search, replace;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &zsearch, &zreplace) != SUCCESS) {
         return;
     }
@@ -380,44 +380,44 @@ PHP_METHOD(UString, replace) {
     switch (Z_TYPE_P(zsearch)) {
         case IS_STRING: {
             search = UnicodeString(Z_STRVAL_P(zsearch), Z_STRLEN_P(zsearch), ustring->codepage->val);
-            
+
             switch(Z_TYPE_P(zreplace)) {
                 case IS_STRING:
                     replace = UnicodeString(Z_STRVAL_P(zreplace), Z_STRLEN_P(zreplace), ustring->codepage->val);
                 break;
-                
+
                 case IS_OBJECT: {
                     replace = *(PHP_USTRING_FETCH(zreplace))->val;
                 } break;
-                
+
                 default:
                     return;
             }
         } break;
-        
-        case IS_OBJECT: {   
+
+        case IS_OBJECT: {
             search = *(PHP_USTRING_FETCH(zsearch))->val;
-            
+
             switch(Z_TYPE_P(zreplace)) {
-                case IS_OBJECT: 
+                case IS_OBJECT:
                     replace = *(PHP_USTRING_FETCH(zreplace))->val;
                 break;
-                
-                case IS_STRING: 
+
+                case IS_STRING:
                     replace = UnicodeString(Z_STRVAL_P(zreplace), Z_STRLEN_P(zreplace), ustring->codepage->val);
                 break;
-                
+
                 default:
                     return;
             }
         } break;
-        
+
         default:
             return;
     }
-    
+
     ustring->val->findAndReplace(search, replace);
-    
+
     RETURN_LONG(ustring->val->length());
 } /* }}} */
 
@@ -427,34 +427,34 @@ PHP_METHOD(UString, charAt) {
                   *uchar;
     long index = 0;
     UChar found;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &index) != SUCCESS) {
         return;
     }
-    
+
     found = ustring->val->charAt(index);
-    
+
     if (found) {
         object_init_ex(return_value, ce_UString);
-    
+
         uchar = PHP_USTRING_FETCH(return_value);
         uchar->val = new UnicodeString(&found);
         uchar->codepage = STR_COPY(ustring->codepage);
     }
-    
+
 } /* }}} */
 
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
 PHP_METHOD(UString, setDefaultCodepage) {
     char *codepage = NULL;
     int32_t clen = 0;
-    
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &codepage, &clen) != SUCCESS) {
         return;
     }
-    
+
     STR_RELEASE(UG(codepage));
-    
+
     UG(codepage) = STR_INIT(codepage, clen, 0);
 } /* }}} */
 
@@ -462,22 +462,22 @@ PHP_METHOD(UString, setDefaultCodepage) {
 PHP_METHOD(UString, getDefaultCodepage) {
     char *codepage = NULL;
     int32_t clen = 0;
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     RETURN_STR(STR_COPY(UG(codepage)));
 } /* }}} */
 
 /* {{{ proto string UString::getCodepage(void) */
 PHP_METHOD(UString, getCodepage) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-    
+
     if (zend_parse_parameters_none() != SUCCESS) {
         return;
     }
-    
+
     RETURN_STR(ustring->codepage);
 } /* }}} */
 
@@ -496,20 +496,20 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_std_arginfo, 0, 0, 1)
     ZEND_ARG_INFO(0, length)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(php_ustring_truncate_arginfo, 0, 0, 1)   
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_truncate_arginfo, 0, 0, 1)
     ZEND_ARG_INFO(0, length)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(php_ustring_replace_arginfo, 0, 0, 2)   
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_replace_arginfo, 0, 0, 2)
     ZEND_ARG_INFO(0, search)
     ZEND_ARG_INFO(0, replace)
-ZEND_END_ARG_INFO() 
+ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(php_ustring_charAt_arginfo, 0, 0, 1)   
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_charAt_arginfo, 0, 0, 1)
     ZEND_ARG_INFO(0, index)
-ZEND_END_ARG_INFO() 
+ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)   
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)
     ZEND_ARG_INFO(0, codepage)
 ZEND_END_ARG_INFO() /* }}} */
 
@@ -539,35 +539,35 @@ zend_function_entry php_ustring_methods[] = {
 static inline HashTable* php_ustring_debug(zval *object, int *temp TSRMLS_DC) {
     php_ustring_t *ustring = PHP_USTRING_FETCH(object);
     HashTable     *udebug;
-    
+
     ALLOC_HASHTABLE(udebug);
     zend_hash_init(udebug, 8, NULL, ZVAL_PTR_DTOR, 0);
-    
-    
-    
+
+
+
     return udebug;
 }
 
 static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC) {
     php_ustring_t *ustring;
     uint32_t length = 0;
-    
+
     if (type != IS_STRING) {
         return FAILURE;
     }
-    
+
     ustring = PHP_USTRING_FETCH(zread);
-    
+
     length = ustring->val->extract
         (0, ustring->val->length(), NULL, length, ustring->codepage->val);
-    
+
     if (!length) {
         return FAILURE;
     }
-    
+
     Z_STR_P(zwrite) = STR_ALLOC(length+1, 0);
     Z_STRLEN_P(zwrite) = length;
-    
+
     ustring->val->extract(
         0,
         ustring->val->length(),
@@ -576,7 +576,7 @@ static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC
         ustring->codepage->val);
 
     Z_STRVAL_P(zwrite)[Z_STRLEN_P(zwrite)] = 0;
-    
+
     return SUCCESS;
 }
 
@@ -585,73 +585,73 @@ static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1
         case ZEND_CONCAT: {
             php_ustring_t *uresult;
             php_ustring_t *uop1, *uop2;
-            
+
             if (op1 != result) {
                 object_init_ex(result, ce_UString);
-            
+
                 uresult = PHP_USTRING_FETCH(result);
                 uresult->val = new UnicodeString();
-                
+
                 switch (Z_TYPE_P(op1)) {
                     case IS_STRING: {
                         uresult->val->append(UnicodeString(Z_STRVAL_P(op1), Z_STRLEN_P(op1)));
                     } break;
-                    
+
                     case IS_OBJECT: {
                         uop1 = PHP_USTRING_FETCH(op1);
-                        
+
                         uresult->val->append(*uop1->val);
                     } break;
-                    
+
                     default:
                         return FAILURE;
                 }
             } else {
                 uresult = PHP_USTRING_FETCH(result);
             }
-            
+
             switch (Z_TYPE_P(op2)) {
                 case IS_STRING: {
                     uresult->val->append(UnicodeString(Z_STRVAL_P(op2), Z_STRLEN_P(op2)));
                 } break;
-                
+
                 case IS_OBJECT: {
                     uop2 = PHP_USTRING_FETCH(op2);
-                    
+
                     uresult->val->append(*uop2->val);
                 } break;
-                
+
                 default:
                     return FAILURE;
             }
-            
+
             return SUCCESS;
         } break;
     }
-    
+
     return FAILURE;
 }
 
 static inline void php_ustring_free(zend_object *zobject TSRMLS_DC) {
     php_ustring_t *ustring = (php_ustring_t*)((char*)(zobject) - XtOffsetOf(php_ustring_t, std));
- 
+
 	zend_object_std_dtor(&ustring->std TSRMLS_CC);
-	
+
 	if (ustring->codepage) {
 	    STR_RELEASE(ustring->codepage);
 	}
-	
+
 	delete ustring->val;
 }
 
 static inline zend_object* php_ustring_create(zend_class_entry *ce TSRMLS_DC) {
-	php_ustring_t *ustring = 
+	php_ustring_t *ustring =
 		(php_ustring_t*) ecalloc(1, sizeof(php_ustring_t));
-	
+
 	zend_object_std_init(&ustring->std, ce TSRMLS_CC);
 
     ustring->std.handlers = &php_ustring_handlers;
-    
+
 	return &ustring->std;
 } /* }}} */
 
@@ -662,25 +662,25 @@ static inline void php_ustring_globals_ctor(zend_ustring_globals  *ug TSRMLS_DC)
 
 /* {{{ */
 static inline zval* php_ustring_read(zval *object, zval *offset, int type, zval *rv TSRMLS_DC) {
-    php_ustring_t *ustring = PHP_USTRING_FETCH(object), 
+    php_ustring_t *ustring = PHP_USTRING_FETCH(object),
                   *rstring;
     zend_bool clean = 0;
-    
+
     object_init_ex(rv, ce_UString);
-    
+
     if (Z_TYPE_P(offset) != IS_LONG) {
         convert_to_long(offset);
         clean = 1;
     }
-    
+
     rstring = PHP_USTRING_FETCH(rv);
     rstring->val = new UnicodeString
         (*ustring->val, Z_LVAL_P(offset), 1);
     rstring->codepage = STR_COPY(ustring->codepage);
-    
+
     if (clean)
         zval_ptr_dtor(offset);
-       
+
     return rv;
 } /* }}} */
 
@@ -689,26 +689,26 @@ static inline void php_ustring_write(zval *object, zval *offset, zval *zvalue TS
     php_ustring_t *ustring = PHP_USTRING_FETCH(object);
     zend_bool cleanup = 0;
     UnicodeString source;
-    
+
     if (Z_TYPE_P(offset) != IS_LONG) {
         convert_to_long(offset);
         cleanup = 1;
     }
-    
+
     if (Z_TYPE_P(zvalue) == IS_STRING) {
         source = UnicodeString(Z_STRVAL_P(zvalue), ustring->codepage->val);
     } else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
         if (instanceof_function(Z_OBJCE_P(zvalue), ce_UString TSRMLS_CC)) {
             source = *(PHP_USTRING_FETCH(zvalue))->val;
         } else {
-            if (cleanup)   
+            if (cleanup)
                 zval_ptr_dtor(offset);
             return;
         }
     }
-    
+
     ustring->val->replace(Z_LVAL_P(offset), source.length(), source);
-    
+
     if (cleanup)
         zval_ptr_dtor(offset);
 } /* }}} */
@@ -716,97 +716,97 @@ static inline void php_ustring_write(zval *object, zval *offset, zval *zvalue TS
 /* {{{ */
 static inline int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
     UnicodeString us1, us2;
-    
+
     switch (Z_TYPE_P(op1)) {
         case IS_STRING:
             us1 = UnicodeString(Z_STRVAL_P(op1), Z_STRLEN_P(op1), UG(codepage)->val);
         break;
-        
+
         case IS_OBJECT:
             if (!instanceof_function(Z_OBJCE_P(op1), ce_UString TSRMLS_CC)) {
                 return 0;
             }
-            
+
             us1 = *(PHP_USTRING_FETCH(op1))->val;
         break;
-        
+
         default:
             return 0;
     }
-    
+
     switch (Z_TYPE_P(op2)) {
         case IS_STRING:
             us2 = UnicodeString(Z_STRVAL_P(op2), Z_STRLEN_P(op2), UG(codepage)->val);
         break;
-        
+
         case IS_OBJECT:
             if (!instanceof_function(Z_OBJCE_P(op2), ce_UString TSRMLS_CC)) {
                 return 0;
             }
-            
+
             us2 = *(PHP_USTRING_FETCH(op2))->val;
         break;
-        
+
         default:
             return 0;
     }
-    
+
     return us1.compare(us2);
 } /* }}} */
 
 /* {{{ */
 static inline void php_ustring_iterator_dtor(zend_object_iterator* iterator TSRMLS_DC) {
     php_ustring_iterator_t *uit = (php_ustring_iterator_t*) iterator;
-    
+
     zval_ptr_dtor(&uit->zobject);
-    
+
     if (Z_TYPE(uit->zdata) != IS_UNDEF) {
         zval_ptr_dtor(&uit->zdata);
         ZVAL_UNDEF(&uit->zdata);
     }
-    
+
     zend_iterator_dtor(iterator TSRMLS_CC);
 } /* }}} */
 
 /* {{{ */
 static inline int php_ustring_iterator_validate(zend_object_iterator* iterator TSRMLS_DC) {
-    php_ustring_iterator_t *uit = 
+    php_ustring_iterator_t *uit =
         (php_ustring_iterator_t*) iterator;
     php_ustring_t *pstring = PHP_USTRING_FETCH(&uit->zobject);
-    
+
     return (uit->position < pstring->val->length()) ? SUCCESS : FAILURE;
 } /* }}} */
 
 /* {{{ */
 static inline zval* php_ustring_iterator_current_data(zend_object_iterator* iterator TSRMLS_DC) {
-    php_ustring_iterator_t *uit = 
+    php_ustring_iterator_t *uit =
         (php_ustring_iterator_t*) iterator;
-    php_ustring_t *ustring, 
+    php_ustring_t *ustring,
                   *pstring = PHP_USTRING_FETCH(&uit->zobject);
-    
+
     object_init_ex(&uit->zdata, ce_UString);
-    
+
     ustring = PHP_USTRING_FETCH(&uit->zdata);
-    ustring->codepage = 
+    ustring->codepage =
         STR_COPY(pstring->codepage);
     ustring->val = new UnicodeString(*pstring->val, uit->position, 1);
-    
+
     return &uit->zdata;
 } /* }}} */
 
 /* {{{ */
 static inline void php_ustring_iterator_current_key(zend_object_iterator* iterator, zval *key TSRMLS_DC) {
-    php_ustring_iterator_t *uit = 
+    php_ustring_iterator_t *uit =
         (php_ustring_iterator_t*) iterator;
-    
+
     ZVAL_LONG(key, uit->position);
 } /* }}} */
 
 /* {{{ */
 static inline void php_ustring_iterator_move_forward(zend_object_iterator* iterator TSRMLS_DC) {
-    php_ustring_iterator_t *uit = 
+    php_ustring_iterator_t *uit =
         (php_ustring_iterator_t*) iterator;
-    
+
     uit->position++;
 } /* }}} */
 
@@ -817,21 +817,21 @@ zend_object_iterator_funcs php_ustring_iterator_funcs = {
     php_ustring_iterator_current_data,
     php_ustring_iterator_current_key,
     php_ustring_iterator_move_forward,
-    NULL  
+    NULL
 }; /* }}} */
 
 /* {{{ */
 static inline zend_object_iterator* php_ustring_iterator(zend_class_entry *ce, zval *zobject, int by_ref TSRMLS_DC) {
     php_ustring_iterator_t *uit = (php_ustring_iterator_t*) emalloc(sizeof(php_ustring_iterator_t));
-    
+
     zend_iterator_init((zend_object_iterator*)uit TSRMLS_CC);
-    
+
     uit->zit.funcs = &php_ustring_iterator_funcs;
     uit->position = 0;
-     
+
     ZVAL_COPY(&uit->zobject, zobject);
     ZVAL_UNDEF(&uit->zdata);
-    
+
     return (zend_object_iterator*) uit;
 } /* }}} */
 
@@ -840,20 +840,20 @@ static inline zend_object_iterator* php_ustring_iterator(zend_class_entry *ce, z
 PHP_MINIT_FUNCTION(ustring)
 {
     zend_class_entry ce;
-    
+
 	INIT_CLASS_ENTRY(ce, "UString", php_ustring_methods);
-	
+
 	ZEND_INIT_MODULE_GLOBALS(ustring, php_ustring_globals_ctor, NULL);
-	
+
 	ce_UString = zend_register_internal_class(&ce TSRMLS_CC);
 	ce_UString->create_object = php_ustring_create;
 	ce_UString->get_iterator = php_ustring_iterator;
-	
+
 	memcpy(
 		&php_ustring_handlers,
 		zend_get_std_object_handlers(),
 		sizeof(zend_object_handlers));
-		
+
     php_ustring_handlers.offset   = XtOffsetOf(php_ustring_t, std);
     php_ustring_handlers.free_obj = php_ustring_free;
 	php_ustring_handlers.do_operation = php_ustring_operate;
@@ -861,7 +861,7 @@ PHP_MINIT_FUNCTION(ustring)
 	php_ustring_handlers.read_dimension = php_ustring_read;
 	php_ustring_handlers.write_dimension = php_ustring_write;
 	php_ustring_handlers.compare_objects = php_ustring_compare;
-	
+
 	return SUCCESS;
 }
 /* }}} */
@@ -871,7 +871,7 @@ PHP_MINIT_FUNCTION(ustring)
 PHP_RINIT_FUNCTION(ustring)
 {
     UG(codepage) = STR_INIT("UTF-8", sizeof("UTF-8")-1, 0);
-    
+
 	return SUCCESS;
 }
 /* }}} */
@@ -881,7 +881,7 @@ PHP_RINIT_FUNCTION(ustring)
 PHP_RSHUTDOWN_FUNCTION(ustring)
 {
     STR_RELEASE(UG(codepage));
-    
+
 	return SUCCESS;
 }
 /* }}} */

@@ -22,13 +22,14 @@
 #include "config.h"
 #endif
 
+#include "unicode/unistr.h"
+
 extern "C" {
 #    include "php.h"
 #    include "php_ini.h"
 #    include "ext/standard/info.h"
 }
 
-#include "unicode/unistr.h"
 
 #include "php_ustring.h"
 ZEND_DECLARE_MODULE_GLOBALS(ustring);

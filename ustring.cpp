@@ -100,8 +100,8 @@ PHP_METHOD(UString, startsWith) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	int32_t    start = -1,
-			   length = -1;
+	long start = -1,
+		 length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -115,9 +115,9 @@ PHP_METHOD(UString, startsWith) {
 				case 1:
 					RETURN_BOOL(ustring->val->startsWith(needle));
 				case 2:
-					RETURN_BOOL(ustring->val->startsWith(needle, start, needle.length()));
+					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, needle.length()));
 				case 3:
-					RETURN_BOOL(ustring->val->startsWith(needle, start, length));
+					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -129,9 +129,9 @@ PHP_METHOD(UString, startsWith) {
 				case 1:
 					RETURN_BOOL(ustring->val->startsWith(*uneedle->val));
 				case 2:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, start, uneedle->val->length()));
+					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, uneedle->val->length()));
 				case 3:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, start, length));
+					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -143,8 +143,8 @@ PHP_METHOD(UString, endsWith) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	int32_t    start = -1,
-			   length = -1;
+	long start = -1,
+		 length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -158,9 +158,9 @@ PHP_METHOD(UString, endsWith) {
 				case 1:
 					RETURN_BOOL(ustring->val->endsWith(needle));
 				case 2:
-					RETURN_BOOL(ustring->val->endsWith(needle, start, needle.length()));
+					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, needle.length()));
 				case 3:
-					RETURN_BOOL(ustring->val->endsWith(needle, start, length));
+					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -172,9 +172,9 @@ PHP_METHOD(UString, endsWith) {
 				case 1:
 					RETURN_BOOL(ustring->val->endsWith(*uneedle->val));
 				case 2:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, start, uneedle->val->length()));
+					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, uneedle->val->length()));
 				case 3:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, start, length));
+					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -186,8 +186,8 @@ PHP_METHOD(UString, indexOf) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	int32_t    start = -1,
-			   length = -1;
+	long start = -1,
+		 length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -201,9 +201,9 @@ PHP_METHOD(UString, indexOf) {
 				case 1:
 					RETURN_LONG(ustring->val->indexOf(needle));
 				case 2:
-					RETURN_LONG(ustring->val->indexOf(needle, start, needle.length()));
+					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, needle.length()));
 				case 3:
-					RETURN_LONG(ustring->val->indexOf(needle, start, length));
+					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -215,9 +215,9 @@ PHP_METHOD(UString, indexOf) {
 				case 1:
 					RETURN_LONG(ustring->val->indexOf(*uneedle->val));
 				case 2:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val, start, uneedle->val->length()));
+					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, uneedle->val->length()));
 				case 3:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val, start, length));
+					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -229,8 +229,8 @@ PHP_METHOD(UString, lastIndexOf) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	int32_t    start = -1,
-			   length = -1;
+	long start = -1,
+		 length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -244,9 +244,9 @@ PHP_METHOD(UString, lastIndexOf) {
 				case 1:
 					RETURN_LONG(ustring->val->lastIndexOf(needle));
 				case 2:
-					RETURN_LONG(ustring->val->lastIndexOf(needle, start, needle.length()));
+					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, needle.length()));
 				case 3:
-					RETURN_LONG(ustring->val->lastIndexOf(needle, start, length));
+					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -258,9 +258,9 @@ PHP_METHOD(UString, lastIndexOf) {
 				case 1:
 					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val));
 				case 2:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, start, uneedle->val->length()));
+					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, uneedle->val->length()));
 				case 3:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, start, length));
+					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, (int32_t)length));
 			}
 		}
 		break;
@@ -314,13 +314,13 @@ PHP_METHOD(UString, trim) {
 /* {{{ proto int UString::truncate(int length) */
 PHP_METHOD(UString, truncate) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	int32_t length = -1;
+	long length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
 		return;
 	}
 
-	ustring->val->truncate(length);
+	ustring->val->truncate((int32_t)length);
 
 	RETURN_LONG(ustring->val->length());
 } /* }}} */
@@ -330,8 +330,8 @@ PHP_METHOD(UString, append) {
 	zval *zdata;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *udata;
-	int32_t    start = -1,
-			   length = -1;
+	long start = -1,
+		 length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zdata, &start, &length) != SUCCESS) {
 		return;
@@ -347,11 +347,11 @@ PHP_METHOD(UString, append) {
 				break;
 
 				case 2:
-					ustring->val->append(data, start, data.length());
+					ustring->val->append(data, (int32_t)start, data.length());
 				break;
 
 				case 3:
-					ustring->val->append(data, start, length);
+					ustring->val->append(data, (int32_t)start, (int32_t)length);
 				break;
 			}
 		}
@@ -366,11 +366,11 @@ PHP_METHOD(UString, append) {
 				break;
 
 				case 2:
-					ustring->val->append(*udata->val, start, udata->val->length());
+					ustring->val->append(*udata->val, (int32_t)start, udata->val->length());
 				break;
 
 				case 3:
-					ustring->val->append(*udata->val, start, length);
+					ustring->val->append(*udata->val, (int32_t)start, (int32_t)length);
 				break;
 			}
 		}
@@ -462,9 +462,9 @@ PHP_METHOD(UString, charAt) {
 /* {{{ proto void UString::insert(int position, UString text [, int start [, int length]]) */
 PHP_METHOD(UString, insert) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	int32_t    position = -1,
-			   start    = -1,
-			   length   = -1;
+	long position = -1,
+			start    = -1,
+			length   = -1;
 	zval    *ztext;
 	UnicodeString utext;
 

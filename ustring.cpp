@@ -56,8 +56,10 @@ zend_object_handlers php_ustring_handlers;
 /* {{{ proto UString UString::__contruct([string arg , [string codepage = "utf-8"]]) */
 PHP_METHOD(UString, __construct)
 {
-	char *val = NULL, *codepage = NULL;
-	long  vlen = 0, clen = 0;
+	char *val = NULL, 
+	     *codepage = NULL;
+	int32_t vlen = 0, 
+	        clen = 0;
 
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
 
@@ -98,8 +100,8 @@ PHP_METHOD(UString, startsWith) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	long    start = -1,
-			length = -1;
+	int32_t    start = -1,
+			   length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -141,8 +143,8 @@ PHP_METHOD(UString, endsWith) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	long    start = -1,
-			length = -1;
+	int32_t    start = -1,
+			   length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -184,8 +186,8 @@ PHP_METHOD(UString, indexOf) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	long    start = -1,
-			length = -1;
+	int32_t    start = -1,
+			   length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -227,8 +229,8 @@ PHP_METHOD(UString, lastIndexOf) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	long    start = -1,
-			length = -1;
+	int32_t    start = -1,
+			   length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
 		return;
@@ -312,7 +314,7 @@ PHP_METHOD(UString, trim) {
 /* {{{ proto int UString::truncate(int length) */
 PHP_METHOD(UString, truncate) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	long length = -1;
+	int32_t length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
 		return;
@@ -328,8 +330,8 @@ PHP_METHOD(UString, append) {
 	zval *zdata;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *udata;
-	long    start = -1,
-			length = -1;
+	int32_t    start = -1,
+			   length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zdata, &start, &length) != SUCCESS) {
 		return;
@@ -438,7 +440,7 @@ PHP_METHOD(UString, replace) {
 PHP_METHOD(UString, charAt) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uchar;
-	long index = 0;
+	int32_t index = 0;
 	UChar found;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &index) != SUCCESS) {
@@ -460,9 +462,9 @@ PHP_METHOD(UString, charAt) {
 /* {{{ proto void UString::insert(int position, UString text [, int start [, int length]]) */
 PHP_METHOD(UString, insert) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	long    position = -1,
-			start    = -1,
-			length   = -1;
+	int32_t    position = -1,
+			   start    = -1,
+			   length   = -1;
 	zval    *ztext;
 	UnicodeString utext;
 
@@ -498,7 +500,7 @@ PHP_METHOD(UString, insert) {
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
 PHP_METHOD(UString, setDefaultCodepage) {
 	char *codepage = NULL;
-	long clen = 0;
+	int32_t clen = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &codepage, &clen) != SUCCESS) {
 		return;

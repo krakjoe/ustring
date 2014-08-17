@@ -1,0 +1,14 @@
+// vim: ft=javascript:
+
+ARG_WITH("ustring", "whether to enable ustring support, path to ICU", "yes");
+
+if (PHP_USTRING != "no") {
+	if (CHECK_LIB("icuuc.lib", "ustring", PHP_USTRING) &&
+					CHECK_HEADER_ADD_INCLUDE("unicode/utf.h", "CFLAGS_INTL")) {
+	}
+	ADD_FLAG("LIBS_USTRING", "icudt.lib icuin.lib icuio.lib icule.lib iculx.lib icutu.lib icuuc.lib");
+	ADD_FLAG("CFLAGS_USTRING", "/EHsc /Zc:wchar_t");
+	var sources = "ustring.cc";
+	AC_DEFINE("PHP_EXPORTS", 1);
+	EXTENSION("ustring", sources);
+}

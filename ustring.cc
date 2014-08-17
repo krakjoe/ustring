@@ -773,7 +773,6 @@ static inline void php_ustring_write(zval *object, zval *offset, zval *zvalue TS
 
 /* {{{ */
 static inline int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
-	php_ustring_t *uop1, *uop2;
 	UnicodeString us1, us2;
 
 	switch (Z_TYPE_P(op1)) {

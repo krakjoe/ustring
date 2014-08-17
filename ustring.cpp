@@ -414,11 +414,32 @@ PHP_METHOD(UString, chunk) {
         
         uchunk = PHP_USTRING_FETCH(&chunked);
         uchunk->codepage = STR_COPY(ustring->codepage);
-        uchunk->val = new UnicodeString(*ustring->val, position, length);
+        uchunk->val = new UnicodeString(*ustring->val, position, (int32_t) length);
         
         add_next_index_zval(return_value, &chunked);
         
         position += length;
+    }
+} /* }}} */
+
+/* {{{ proto UString UString::repeat(int count) */
+PHP_METHOD(UString, repeat) {
+    php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()), 
+                  *urepeat;
+    long count = 0, current = 0;
+    
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &count) != SUCCESS) {
+        return;
+    }
+    
+    object_init_ex(return_value, ce_UString);
+    
+    urepeat = PHP_USTRING_FETCH(return_value);
+    urepeat->codepage = STR_COPY(ustring->codepage);
+    urepeat->val = new UnicodeString(*ustring->val);
+    
+    while (++current < count) {
+        urepeat->val->append((*ustring->val));
     }
 } /* }}} */
 
@@ -497,6 +518,9 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_chunk_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, length)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_repeat_arginfo, 0, 0, 1)
+	ZEND_ARG_INFO(0, count)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, codepage)
@@ -520,6 +544,7 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, replaceSlice, php_ustring_replaceSlice_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, contains, php_ustring_contains_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, chunk, php_ustring_chunk_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, repeat, php_ustring_repeat_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, setDefaultCodepage, php_ustring_setDefaultCodepage_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)

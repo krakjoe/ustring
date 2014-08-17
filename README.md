@@ -86,6 +86,11 @@ abstract class UString {
     /**
     * @return UString
     **/
+    public function repeat(int $count);
+    
+    /**
+    * @return UString
+    **/
     public function charAt(int $index);
     
     /**

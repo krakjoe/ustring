@@ -51,22 +51,22 @@ abstract class UString {
     /**
     * @return bool
     **/
-    public function startsWith(UString $needle [, int $start [, int $length]]);
+    public function startsWith(UString $needle);
     
     /**
     * @return bool
     **/
-    public function endsWith(UString $needle [, int $start [, int $length]]);
+    public function endsWith(UString $needle);
     
     /**
     * @return int
     **/
-    public function indexOf(UString $needle [, int $start [, int $length]]);
+    public function indexOf(UString $needle);
     
     /**
     * @return int
     **/
-    public function lastIndexOf(UString $needle [, int $start [, int $length]]);
+    public function lastIndexOf(UString $needle);
     
     /**
     * @return UString

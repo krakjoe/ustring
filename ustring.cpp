@@ -95,175 +95,76 @@ PHP_METHOD(UString, length) {
 	RETURN_LONG(ustring->val->length());
 } /* }}} */
 
-/* {{{ proto bool UString::startsWith(UString needle [, int start [, int length]]) */
+/* {{{ proto bool UString::startsWith(UString needle) */
 PHP_METHOD(UString, startsWith) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
 				  *uneedle;
-	long start = -1,
-		 length = -1;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zneedle) != SUCCESS) {
 		return;
 	}
 
 	switch (Z_TYPE_P(zneedle)) {
-		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t)Z_STRLEN_P(zneedle), ustring->codepage->val);
+		case IS_STRING: 
+		    RETURN_BOOL(ustring->val->startsWith(UnicodeString(Z_STRVAL_P(zneedle), (int32_t)Z_STRLEN_P(zneedle), ustring->codepage->val)));
 
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_BOOL(ustring->val->startsWith(needle));
-				case 2:
-					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, needle.length() - start));
-				case 3:
-					RETURN_BOOL(ustring->val->startsWith(needle, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
-
-		case IS_OBJECT: {
-			uneedle = PHP_USTRING_FETCH(zneedle);
-
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val));
-				case 2:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
-				case 3:
-					RETURN_BOOL(ustring->val->startsWith(*uneedle->val, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
+		case IS_OBJECT:
+		    RETURN_BOOL(ustring->val->startsWith(*(PHP_USTRING_FETCH(zneedle))->val));
 	}
 } /* }}} */
 
-/* {{{ proto bool UString::endsWith(UString needle [, int start [, int length]]) */
+/* {{{ proto bool UString::endsWith(UString needle]) */
 PHP_METHOD(UString, endsWith) {
 	zval *zneedle;
-	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
-				  *uneedle;
-	long start = -1,
-		 length = -1;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
+	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zneedle) != SUCCESS) {
 		return;
 	}
 
 	switch (Z_TYPE_P(zneedle)) {
-		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
+		case IS_STRING:
+		    RETURN_BOOL(ustring->val->endsWith(UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val)));
 
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_BOOL(ustring->val->endsWith(needle));
-				case 2:
-					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, needle.length() - start));
-				case 3:
-					RETURN_BOOL(ustring->val->endsWith(needle, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
-
-		case IS_OBJECT: {
-			uneedle = PHP_USTRING_FETCH(zneedle);
-
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val));
-				case 2:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
-				case 3:
-					RETURN_BOOL(ustring->val->endsWith(*uneedle->val, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
+		case IS_OBJECT:
+		    RETURN_BOOL(ustring->val->endsWith(*(PHP_USTRING_FETCH(zneedle))->val));
 	}
 } /* }}} */
 
-/* {{{ proto int UString::indexOf(UString needle [, int start [, int length]]) */
+/* {{{ proto int UString::indexOf(UString needle) */
 PHP_METHOD(UString, indexOf) {
 	zval *zneedle;
-	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
-				  *uneedle;
-	long start = -1,
-		 length = -1;
+	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zneedle) != SUCCESS) {
 		return;
 	}
 
 	switch (Z_TYPE_P(zneedle)) {
-		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
+		case IS_STRING:
+            RETURN_LONG(ustring->val->indexOf(UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val)));
 
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_LONG(ustring->val->indexOf(needle));
-				case 2:
-					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, needle.length() - start));
-				case 3:
-					RETURN_LONG(ustring->val->indexOf(needle, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
-
-		case IS_OBJECT: {
-			uneedle = PHP_USTRING_FETCH(zneedle);
-
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val));
-				case 2:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
-				case 3:
-					RETURN_LONG(ustring->val->indexOf(*uneedle->val, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
+		case IS_OBJECT:
+		    RETURN_LONG(ustring->val->indexOf(*(PHP_USTRING_FETCH(zneedle))->val));
 	}
 } /* }}} */
 
-/* {{{ proto int UString::lastIndexOf(UString needle [, int start [, int length]]) */
+/* {{{ proto int UString::lastIndexOf(UString needle) */
 PHP_METHOD(UString, lastIndexOf) {
 	zval *zneedle;
-	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
-				  *uneedle;
-	long start = -1,
-		 length = -1;
+	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle, &start, &length) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle) != SUCCESS) {
 		return;
 	}
 
 	switch (Z_TYPE_P(zneedle)) {
-		case IS_STRING: {
-			UnicodeString needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
+		case IS_STRING:
+		    RETURN_LONG(ustring->val->lastIndexOf(UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val)));
 
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_LONG(ustring->val->lastIndexOf(needle));
-				case 2:
-					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, needle.length() - start));
-				case 3:
-					RETURN_LONG(ustring->val->lastIndexOf(needle, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
-
-		case IS_OBJECT: {
-			uneedle = PHP_USTRING_FETCH(zneedle);
-
-			switch (ZEND_NUM_ARGS()) {
-				case 1:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val));
-				case 2:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, uneedle->val->length() - start));
-				case 3:
-					RETURN_LONG(ustring->val->lastIndexOf(*uneedle->val, (int32_t)start, (int32_t)length - start));
-			}
-		}
-		break;
+		case IS_OBJECT:
+		    RETURN_LONG(ustring->val->lastIndexOf(*(PHP_USTRING_FETCH(zneedle))->val));
 	}
 } /* }}} */
 

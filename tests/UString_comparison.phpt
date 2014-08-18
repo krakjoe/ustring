@@ -1,5 +1,5 @@
 --TEST--
-Test UString concat operator
+Test UString comparison
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
 --FILE--
@@ -8,10 +8,7 @@ $std = "こんにちは世界";
 
 $string = new UString($std);
 
-var_dump($string->length());
-$result = $string .= ", whatever";
-var_dump($result->length());
+var_dump($string == $std);
 ?>
 --EXPECT--
-int(7)
-int(17)
+bool(true)

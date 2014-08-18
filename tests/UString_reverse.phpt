@@ -4,13 +4,11 @@ Test UString::reverse
 <?php require_once('skipif.inc'); ?>
 --FILE--
 <?php
-$std = "こんにちは世界";
+$std = "ABCDEFG";
 
 $string = new UString($std);
 
-$string->reverse();
-
-var_dump((string) $string);
+var_dump((string) $string->reverse());
 ?>
---EXPECTF--
-string(21) "%s"
+--EXPECT--
+string(7) "GFEDCBA"

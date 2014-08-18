@@ -1,13 +1,19 @@
 --TEST--
-Test UString iteration
+Test UString concat operator
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
 --FILE--
 <?php
 $std = "こんにちは世界";
+
 $string = new UString($std);
 
-var_dump($string == $std);
+var_dump($string->length());
+
+$result = $string .= ", whatever";
+
+var_dump($result->length());
 ?>
 --EXPECT--
-bool(true)
+int(7)
+int(17)

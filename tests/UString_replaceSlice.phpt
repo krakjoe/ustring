@@ -1,5 +1,5 @@
 --TEST--
-Test UString::insert
+Test UString::replaceSlice
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
 --FILE--

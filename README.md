@@ -14,36 +14,26 @@ abstract class UString {
     public function length();
     
     /** 
-    * @return void
+    * @return UString
     **/
     public function toUpper(void);
     
     /** 
-    * @return void
+    * @return UString
     **/
     public function toLower(void);
     
     /** 
-    * @return void
+    * @return UString
     **/
     public function reverse(void);
     
     /**
-    * @return int new length
+    * @return UString
     **/
     public function trim(void);
     
-    /** 
-    * @return int new length
-    **/
-    public function truncate(int $length);
-    
-    /** 
-    * @return int new length
-    **/
-    public function append(UString $string);
-    
-    /** 
+    /**
     * @return int new length
     **/
     public function replace(UString $search, UString $replace);

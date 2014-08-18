@@ -9,8 +9,10 @@ $std = " こんにちは世界 ";
 $string = new UString($std);
 
 var_dump($string->length());
-$string->trim();
-var_dump($string->length());
+
+$trimmed = $string->trim();
+
+var_dump($trimmed->length());
 ?>
 --EXPECTF--
 int(9)

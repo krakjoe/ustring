@@ -219,91 +219,79 @@ PHP_METHOD(UString, lastIndexOf) {
 	RETURN_LONG(index + offset);
 } /* }}} */
 
-/* {{{ proto void UString::toLower(void) */
+/* {{{ proto UString UString::toLower(void) */
 PHP_METHOD(UString, toLower) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-
+    php_ustring_t *ostring;
+    
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
-
-	ustring->val->toLower();
+    
+    object_init_ex(return_value, ce_UString);
+    
+    ostring = PHP_USTRING_FETCH(return_value);
+    ostring->val = new UnicodeString(*ustring->val);
+    ostring->val->toLower();
+    ostring->codepage = STR_COPY(ustring->codepage);
 } /* }}} */
 
-/* {{{ proto void UString::toUpper(void) */
+/* {{{ proto UString UString::toUpper(void) */
 PHP_METHOD(UString, toUpper) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-
+    php_ustring_t *ostring;
+    
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	ustring->val->toUpper();
+	object_init_ex(return_value, ce_UString);
+    
+    ostring = PHP_USTRING_FETCH(return_value);
+    ostring->val = new UnicodeString(*ustring->val);
+    ostring->val->toUpper();
+    ostring->codepage = STR_COPY(ustring->codepage);
 } /* }}} */
 
-/* {{{ proto void UString::reverse(void) */
+/* {{{ proto UString UString::reverse(void) */
 PHP_METHOD(UString, reverse) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-
+    php_ustring_t *ostring;
+    
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	ustring->val->reverse();
+    object_init_ex(return_value, ce_UString);
+    
+    ostring = PHP_USTRING_FETCH(return_value);
+    ostring->val = new UnicodeString(*ustring->val);
+    ostring->val->reverse();
+    ostring->codepage = STR_COPY(ustring->codepage);
 } /* }}} */
 
-/* {{{ proto void UString::trim(void) */
+/* {{{ proto UString UString::trim(void) */
 PHP_METHOD(UString, trim) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-
+    php_ustring_t *ostring;
+    
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	ustring->val->trim();
+    object_init_ex(return_value, ce_UString);
+    
+    ostring = PHP_USTRING_FETCH(return_value);
+    ostring->val = new UnicodeString(*ustring->val);
+    ostring->val->trim();
+    ostring->codepage = STR_COPY(ustring->codepage);
 } /* }}} */
 
-/* {{{ proto int UString::truncate(int length) */
-PHP_METHOD(UString, truncate) {
-	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	long length = -1;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
-		return;
-	}
-
-	ustring->val->truncate((int32_t)length);
-
-	RETURN_LONG(ustring->val->length());
-} /* }}} */
-
-/* {{{ proto int UString::append(string data) */
-PHP_METHOD(UString, append) {
-	zval *zdata;
-	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
-				  *udata;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zdata) != SUCCESS) {
-		return;
-	}
-
-	switch (Z_TYPE_P(zdata)) {
-		case IS_STRING: 
-	        ustring->val->append(UnicodeString(Z_STRVAL_P(zdata), (int32_t) Z_STRLEN_P(zdata), ustring->codepage->val));
-		break;
-
-		case IS_OBJECT: 
-		    ustring->val->append(*(PHP_USTRING_FETCH(zdata))->val);
-		break;
-	}
-
-	RETURN_LONG(ustring->val->length());
-} /* }}} */
-
-/* {{{ proto int UString::replace(UString search, UString replace) */
+/* {{{ proto UString UString::replace(UString search, UString replace) */
 PHP_METHOD(UString, replace) {
 	zval *zsearch, *zreplace;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+	php_ustring_t *ostring;
 	UnicodeString search, replace;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &zsearch, &zreplace) != SUCCESS) {
@@ -350,10 +338,13 @@ PHP_METHOD(UString, replace) {
 		default:
 			return;
 	}
-
-	ustring->val->findAndReplace(search, replace);
-
-	RETURN_LONG(ustring->val->length());
+    
+    object_init_ex(return_value, ce_UString);
+    
+    ostring = PHP_USTRING_FETCH(return_value);
+    ostring->val = new UnicodeString(*ustring->val);
+    ostring->codepage = STR_COPY(ustring->codepage);
+	ostring->val->findAndReplace(search, replace);
 } /* }}} */
 
 /* {{{ proto UString UString::charAt(int index) */
@@ -542,10 +533,6 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_std_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, needle)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(php_ustring_truncate_arginfo, 0, 0, 1)
-	ZEND_ARG_INFO(0, length)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_replace_arginfo, 0, 0, 2)
 	ZEND_ARG_INFO(0, search)
 	ZEND_ARG_INFO(0, replace)
@@ -589,8 +576,6 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, toUpper, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, reverse, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, trim, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
-	PHP_ME(UString, truncate, php_ustring_truncate_arginfo, ZEND_ACC_PUBLIC)
-	PHP_ME(UString, append, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, replace, php_ustring_replace_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, replaceSlice, php_ustring_replaceSlice_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, contains, php_ustring_contains_arginfo, ZEND_ACC_PUBLIC)

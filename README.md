@@ -84,6 +84,11 @@ abstract class UString {
     public function charAt(int $index);
     
     /**
+    * @return UString
+    **/
+    public function substring(int $start [, int $length]);
+    
+    /**
     * @return string
     **/
     public function getCodepage(void);

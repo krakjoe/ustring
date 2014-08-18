@@ -369,6 +369,30 @@ PHP_METHOD(UString, charAt) {
 	}
 } /* }}} */
 
+/* {{{ proto UString UString::substring(int start [, int length]) */
+PHP_METHOD(UString, substring) {
+	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
+				  *ostring;
+	long start = -1,
+	     length = -1;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &start, &length) != SUCCESS) {
+		return;
+	}
+
+	if (start < 0)
+	    RETURN_FALSE;
+	    
+	if (length == -1)
+	    length = ustring->val->length() - start;
+	    
+	object_init_ex(return_value, ce_UString);
+	
+	ostring = PHP_USTRING_FETCH(return_value);
+	ostring->codepage = STR_COPY(ustring->codepage);
+	ostring->val = new UnicodeString(*ustring->val, (int32_t) start, (int32_t) length);
+} /* }}} */
+
 /* {{{ proto UString UString::replaceSlice(UString text [, int start [, int length]]) */
 PHP_METHOD(UString, replaceSlice) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
@@ -548,6 +572,11 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_charAt_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, index)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_substring_arginfo, 0, 0, 1)
+	ZEND_ARG_INFO(0, start)
+	ZEND_ARG_INFO(0, length)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_replaceSlice_arginfo, 0, 0, 2)
 	ZEND_ARG_INFO(0, text)
 	ZEND_ARG_INFO(0, start)
@@ -588,6 +617,7 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, chunk, php_ustring_chunk_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, repeat, php_ustring_repeat_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, substring, php_ustring_substring_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, setDefaultCodepage, php_ustring_setDefaultCodepage_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(UString, getDefaultCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)

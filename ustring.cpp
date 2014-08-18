@@ -369,9 +369,10 @@ PHP_METHOD(UString, charAt) {
 	}
 } /* }}} */
 
-/* {{{ proto void UString::replaceSlice(UString text [, int start [, int length]]) */
+/* {{{ proto UString UString::replaceSlice(UString text [, int start [, int length]]) */
 PHP_METHOD(UString, replaceSlice) {
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+	php_ustring_t *ostring;
 	long start    = -1,
 		 length   = -1;
 	zval    *ztext;
@@ -403,7 +404,12 @@ PHP_METHOD(UString, replaceSlice) {
 	if (length == -1)
 		length = utext.length() - start;
     
-    ustring->val->replace(start, length, utext, 0, utext.length());
+    object_init_ex(return_value, ce_UString);
+    
+    ostring = PHP_USTRING_FETCH(return_value);
+    ostring->val = new UnicodeString(*ustring->val);
+    ostring->codepage = STR_COPY(ustring->codepage);
+    ostring->val->replace(start, length, utext, 0, utext.length());
 } /* }}} */
 
 /* {{{ proto bool UString::contains(UString text) */

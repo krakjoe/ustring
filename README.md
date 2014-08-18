@@ -34,12 +34,12 @@ abstract class UString {
     public function trim(void);
     
     /**
-    * @return int new length
+    * @return UString
     **/
     public function replace(UString $search, UString $replace);
     
     /**
-    * @return void
+    * @return UString
     **/
     public function replaceSlice(UString $text [, int $start [, int $length]])
     

@@ -7,9 +7,9 @@ Test UString::insert
 $std = "こんにちは世界";
 $string = new UString($std);
 
-$string->replaceSlice("hello", 1, 1);
+$replaced = $string->replaceSlice("hello", 1, 1);
 
-var_dump((string) $string);
+var_dump((string) $replaced);
 ?>
 --EXPECTF--
 string(23) "%shello%s"

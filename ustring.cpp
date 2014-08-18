@@ -98,74 +98,125 @@ PHP_METHOD(UString, length) {
 /* {{{ proto bool UString::startsWith(UString needle) */
 PHP_METHOD(UString, startsWith) {
 	zval *zneedle;
-	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis()),
-				  *uneedle;
-
+	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
+    UnicodeString needle;
+    
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zneedle) != SUCCESS) {
 		return;
 	}
 
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING: 
-		    RETURN_BOOL(ustring->val->startsWith(UnicodeString(Z_STRVAL_P(zneedle), (int32_t)Z_STRLEN_P(zneedle), ustring->codepage->val)));
+		    needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t)Z_STRLEN_P(zneedle), ustring->codepage->val);
+		break;
 
 		case IS_OBJECT:
-		    RETURN_BOOL(ustring->val->startsWith(*(PHP_USTRING_FETCH(zneedle))->val));
+		    needle = *(PHP_USTRING_FETCH(zneedle))->val;
+		break;
+		
+		default:
+		    return;
 	}
+	
+	RETURN_BOOL(ustring->val->startsWith(needle));
 } /* }}} */
 
 /* {{{ proto bool UString::endsWith(UString needle]) */
 PHP_METHOD(UString, endsWith) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-	
+    UnicodeString needle;
+    	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zneedle) != SUCCESS) {
 		return;
 	}
-
+    
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING:
-		    RETURN_BOOL(ustring->val->endsWith(UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val)));
+		    needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
+	    break;
 
 		case IS_OBJECT:
-		    RETURN_BOOL(ustring->val->endsWith(*(PHP_USTRING_FETCH(zneedle))->val));
+		    needle = *(PHP_USTRING_FETCH(zneedle))->val;
+		break;
+		
+		default:
+		    return;
 	}
+	
+	RETURN_BOOL(ustring->val->endsWith(needle));
 } /* }}} */
 
-/* {{{ proto int UString::indexOf(UString needle) */
+/* {{{ proto mixed UString::indexOf(UString needle [, int $offset]) */
 PHP_METHOD(UString, indexOf) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zneedle) != SUCCESS) {
+    UnicodeString haystack, needle;
+    long offset = 0;
+    int32_t index = -1;
+    
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &zneedle, &offset) != SUCCESS) {
 		return;
 	}
+	
+	haystack = (offset > 0) ?
+	    UnicodeString(*ustring->val, (int32_t) offset) : *ustring->val;
 
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING:
-            RETURN_LONG(ustring->val->indexOf(UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val)));
-
+            needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
+        break;
+        
 		case IS_OBJECT:
-		    RETURN_LONG(ustring->val->indexOf(*(PHP_USTRING_FETCH(zneedle))->val));
+		    needle = *(PHP_USTRING_FETCH(zneedle))->val;
+		break;
+		
+		default:
+		    return;
 	}
+	
+	index = haystack.indexOf(needle);
+	
+	if (index < 0)
+	    RETURN_FALSE;
+	
+	RETURN_LONG(index + offset);
 } /* }}} */
 
-/* {{{ proto int UString::lastIndexOf(UString needle) */
+/* {{{ proto mixed UString::lastIndexOf(UString needle [, int $offset]) */
 PHP_METHOD(UString, lastIndexOf) {
 	zval *zneedle;
 	php_ustring_t *ustring = PHP_USTRING_FETCH(getThis());
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &zneedle) != SUCCESS) {
+    UnicodeString haystack, needle;
+    long offset = 0;
+    int32_t index = -1;
+    
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &zneedle, &offset) != SUCCESS) {
 		return;
 	}
 
+    haystack = (offset > 0) ?   
+        UnicodeString(*ustring->val, (int32_t) offset) : *ustring->val;
+    
 	switch (Z_TYPE_P(zneedle)) {
 		case IS_STRING:
-		    RETURN_LONG(ustring->val->lastIndexOf(UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val)));
+		    needle = UnicodeString(Z_STRVAL_P(zneedle), (int32_t) Z_STRLEN_P(zneedle), ustring->codepage->val);
+		break;
 
 		case IS_OBJECT:
-		    RETURN_LONG(ustring->val->lastIndexOf(*(PHP_USTRING_FETCH(zneedle))->val));
+		    needle = *(PHP_USTRING_FETCH(zneedle))->val;
+		break;
+		
+		default:
+		    return;
 	}
+	
+	index = haystack.lastIndexOf(needle);
+	
+	if (index < 0)
+	    RETURN_FALSE;
+	
+	RETURN_LONG(index + offset);
 } /* }}} */
 
 /* {{{ proto void UString::toLower(void) */

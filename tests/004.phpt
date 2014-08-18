@@ -10,7 +10,9 @@ $string = new UString($std);
 
 var_dump($string->indexOf("界"));
 var_dump($string->indexOf(new UString("界")));
+var_dump($string->indexOf("ん", 1));
 ?>
 --EXPECT--
 int(6)
 int(6)
+int(1)

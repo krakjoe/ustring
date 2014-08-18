@@ -69,14 +69,14 @@ abstract class UString {
     public function endsWith(UString $needle);
     
     /**
-    * @return int
+    * @return mixed
     **/
-    public function indexOf(UString $needle);
+    public function indexOf(UString $needle [, int $offset]);
     
     /**
-    * @return int
+    * @return mixed
     **/
-    public function lastIndexOf(UString $needle);
+    public function lastIndexOf(UString $needle, [int $offset]);
     
     /**
     * @return UString[]

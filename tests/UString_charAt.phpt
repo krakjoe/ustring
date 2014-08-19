@@ -11,4 +11,4 @@ $string = new UString($std);
 var_dump((string)$string->charAt(1));
 ?>
 --EXPECTF--
-string(4) "%s"
+string(3) "%s"

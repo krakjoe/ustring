@@ -40,15 +40,26 @@ extern zend_module_entry ustring_module_entry;
 #    include "TSRM.h"
 #endif
 
-#ifdef ZTS
-#define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
-#else
-#define UG(v) (ustring_globals.v)
-#endif
-
-ZEND_BEGIN_MODULE_GLOBALS(ustring)
-    zend_string *codepage;
-ZEND_END_MODULE_GLOBALS(ustring)
+PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, long len, const char *codepage, long clen TSRMLS_DC);
+PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC);
+PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC);
+PHP_USTRING_API bool php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC);
+PHP_USTRING_API int32_t php_ustring_indexOf(zval *that, zval *needle, long offset TSRMLS_DC);
+PHP_USTRING_API int32_t php_ustring_lastIndexOf(zval *that, zval *needle, long offset TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_toLower(zval *that TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_toUpper(zval *that, zval *uppered TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_reverse(zval *that, zval *reversed TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_trim(zval *that, zval *trimmed TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_replace(zval *that, zval *search, zval *replace, zval *replaced TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, long offset, long length, zval *replaced TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_charAt(zval *that, long offset, zval *found TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_substring(zval *that, long offset, long length, zval *sub TSRMLS_DC);
+PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_chunk(zval *that, long length, zval *chunks TSRMLS_DC);
+PHP_USTRING_API zval* php_ustring_repeat(zval *that, long count, zval *repeated TSRMLS_DC);
+PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC);
+PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, long len TSRMLS_DC);
+PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D);
 
 #endif	/* PHP_USTRING_H */
 

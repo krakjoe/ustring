@@ -57,7 +57,7 @@ typedef struct _php_ustring_iterator_t {
 	int32_t position;
 } php_ustring_iterator_t;
 
-#define PHP_USTRING_FETCH(o) (php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std))
+#define PHP_USTRING_FETCH(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
 
 zend_class_entry *ce_UString;
 
@@ -441,11 +441,16 @@ PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC) {
 PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, long len TSRMLS_DC) {
     STR_RELEASE(UG(codepage));
 
-	UG(codepage) = STR_INIT(value, len, 0);
+	UG(codepage) = 
+	    STR_INIT(value, len, 0);
 }
 
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D) {
     return UG(codepage);
+}
+
+PHP_USTRING_API void* php_ustring_cast(void *that, php_ustring_cast_type_t type TSRMLS_DC) {
+    
 }
 
 /* {{{ proto UString UString::__contruct([string arg , [string codepage = "utf-8"]]) */
@@ -889,35 +894,6 @@ static inline zval* php_ustring_read(zval *object, zval *offset, int type, zval 
 } /* }}} */
 
 /* {{{ */
-static inline void php_ustring_write(zval *object, zval *offset, zval *zvalue TSRMLS_DC) {
-	php_ustring_t *ustring = PHP_USTRING_FETCH(object);
-	zend_bool cleanup = 0;
-	UnicodeString source;
-
-	if (Z_TYPE_P(offset) != IS_LONG) {
-		convert_to_long(offset);
-		cleanup = 1;
-	}
-
-	if (Z_TYPE_P(zvalue) == IS_STRING) {
-		source = UnicodeString(Z_STRVAL_P(zvalue), ustring->codepage->val);
-	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-		if (instanceof_function(Z_OBJCE_P(zvalue), ce_UString TSRMLS_CC)) {
-			source = *(PHP_USTRING_FETCH(zvalue))->val;
-		} else {
-			if (cleanup)
-				zval_ptr_dtor(offset);
-			return;
-		}
-	}
-
-	ustring->val->replace(Z_LVAL_P(offset), source.length(), source);
-
-	if (cleanup)
-		zval_ptr_dtor(offset);
-} /* }}} */
-
-/* {{{ */
 static inline int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 	UnicodeString us1, us2;
 
@@ -1063,7 +1039,6 @@ PHP_MINIT_FUNCTION(ustring)
 	php_ustring_handlers.do_operation = php_ustring_operate;
 	php_ustring_handlers.cast_object = php_ustring_cast;
 	php_ustring_handlers.read_dimension = php_ustring_read;
-	php_ustring_handlers.write_dimension = php_ustring_write;
 	php_ustring_handlers.compare_objects = php_ustring_compare;
 
 	return SUCCESS;

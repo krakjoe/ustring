@@ -40,10 +40,11 @@ extern zend_module_entry ustring_module_entry;
 #    include "TSRM.h"
 #endif
 
-typedef enum _php_ustring_cast_type_t {
-    PHP_USTRING_CAST_INTERN,
-    PHP_USTRING_CAST_ZVAL
-} php_ustring_cast_type_t;
+typedef struct _php_ustring_t {
+	UnicodeString *val;
+	zend_string   *codepage;
+	zend_object   std;
+} php_ustring_t;
 
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, long len, const char *codepage, long clen TSRMLS_DC);
 PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC);
@@ -65,10 +66,8 @@ PHP_USTRING_API zval* php_ustring_repeat(zval *that, long count, zval *repeated 
 PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC);
 PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, long len TSRMLS_DC);
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D);
-PHP_USTRING_API void* php_ustring_cast(void *that, php_ustring_cast_type_t type TSRMLS_DC);
 
 #endif	/* PHP_USTRING_H */
-
 
 /*
  * Local variables:

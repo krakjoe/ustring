@@ -44,12 +44,6 @@ ZEND_END_MODULE_GLOBALS(ustring)
 
 ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
-typedef struct _php_ustring_t {
-	UnicodeString *val;
-	zend_string   *codepage;
-	zend_object   std;
-} php_ustring_t;
-
 typedef struct _php_ustring_iterator_t {
 	zend_object_iterator zit;
 	zval zobject;
@@ -447,10 +441,6 @@ PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, long len 
 
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D) {
     return UG(codepage);
-}
-
-PHP_USTRING_API void* php_ustring_cast(void *that, php_ustring_cast_type_t type TSRMLS_DC) {
-    
 }
 
 /* {{{ proto UString UString::__contruct([string arg , [string codepage = "utf-8"]]) */

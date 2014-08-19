@@ -28,21 +28,10 @@ extern "C" {
 #    include "php.h"
 #    include "php_ini.h"
 #    include "ext/standard/info.h"
+#    include "api.h"
 }
 
 #include "php_ustring.h"
-
-#ifdef ZTS
-#define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
-#else
-#define UG(v) (ustring_globals.v)
-#endif
-
-ZEND_BEGIN_MODULE_GLOBALS(ustring)
-    zend_string *codepage;
-ZEND_END_MODULE_GLOBALS(ustring)
-
-ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
 typedef struct _php_ustring_t {
 	UnicodeString *val;
@@ -57,9 +46,15 @@ typedef struct _php_ustring_iterator_t {
 	int32_t position;
 } php_ustring_iterator_t;
 
-#define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
+ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
-zend_class_entry *ce_UString;
+#ifdef ZTS
+#define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
+#else
+#define UG(v) (ustring_globals.v)
+#endif
+
+#define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
 
 zend_object_handlers php_ustring_handlers;
 

@@ -29,13 +29,13 @@
 #	define PHP_USTRING_API
 #endif
 
-#include <php.h>
+#include "unicode/unistr.h"
 
-#ifdef ZTS
-#    include "TSRM.h"
-#endif
-
-#include <stdbool.h>
+extern "C" {
+#    include "php.h"
+#    include "php_ini.h"
+#    include "ext/standard/info.h"
+}
 
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, long len, const char *codepage, long clen TSRMLS_DC);
 PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC);

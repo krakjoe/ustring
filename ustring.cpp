@@ -28,10 +28,9 @@ extern "C" {
 #    include "php.h"
 #    include "php_ini.h"
 #    include "ext/standard/info.h"
+#    include "php_ustring.h"
 #    include "api.h"
 }
-
-#include "php_ustring.h"
 
 typedef struct _php_ustring_t {
 	UnicodeString *val;

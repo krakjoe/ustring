@@ -44,6 +44,12 @@ ZEND_END_MODULE_GLOBALS(ustring)
 
 ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
+typedef struct _php_ustring_t {
+	UnicodeString *val;
+	zend_string   *codepage;
+	zend_object   std;
+} php_ustring_t;
+
 typedef struct _php_ustring_iterator_t {
 	zend_object_iterator zit;
 	zval zobject;
@@ -51,9 +57,15 @@ typedef struct _php_ustring_iterator_t {
 	int32_t position;
 } php_ustring_iterator_t;
 
+#define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
+
 zend_class_entry *ce_UString;
 
 zend_object_handlers php_ustring_handlers;
+
+PHP_USTRING_API UnicodeString* php_ustring_value(zval *that TSRMLS_DC) {
+    return php_ustring_fetch(that)->val;
+}
 
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, long vlen, const char *codepage, long clen TSRMLS_DC) {
     php_ustring_t* ustring;

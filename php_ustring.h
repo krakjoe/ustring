@@ -40,14 +40,6 @@ extern zend_module_entry ustring_module_entry;
 #    include "TSRM.h"
 #endif
 
-typedef struct _php_ustring_t {
-	UnicodeString *val;
-	zend_string   *codepage;
-	zend_object   std;
-} php_ustring_t;
-
-#define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
-
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, long len, const char *codepage, long clen TSRMLS_DC);
 PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC);
 PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC);
@@ -66,8 +58,11 @@ PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC);
 PHP_USTRING_API zval* php_ustring_chunk(zval *that, long length, zval *chunks TSRMLS_DC);
 PHP_USTRING_API zval* php_ustring_repeat(zval *that, long count, zval *repeated TSRMLS_DC);
 PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC);
+
 PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, long len TSRMLS_DC);
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D);
+
+PHP_USTRING_API UnicodeString* php_ustring_value(zval *that TSRMLS_DC);
 
 #endif	/* PHP_USTRING_H */
 

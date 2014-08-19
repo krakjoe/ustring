@@ -46,6 +46,8 @@ typedef struct _php_ustring_t {
 	zend_object   std;
 } php_ustring_t;
 
+#define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
+
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, long len, const char *codepage, long clen TSRMLS_DC);
 PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC);
 PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC);

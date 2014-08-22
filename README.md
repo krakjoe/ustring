@@ -5,7 +5,7 @@ The following Unicode String support for PHP7 ...
 
 ```php
 <?php
-abstract class UString {
+abstract class UString implements Iterable {
     public function __construct([string $string [, string $codepage]]);
     
     /** 
@@ -106,6 +106,6 @@ abstract class UString {
 ?>
 ```
 
-*Note: UString is iterable and interchangable with zend strings for method parameters and can be cast for output/conversion to zend strings*
+*Note: UString is interchangable with zend strings for method parameters and can be cast for output/conversion to zend strings*
 
 **This extension requires PHP7 and ICU (with headers)**

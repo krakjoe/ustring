@@ -88,7 +88,7 @@ PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) 
     
     switch (Z_TYPE_P(needle)) {
 		case IS_STRING:
-		    uneedle = UnicodeString(Z_STRVAL_P(needle), (int32_t)Z_STRSIZE_P(needle), ustring->codepage->val);
+		    uneedle = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
 		break;
 
 		case IS_OBJECT:
@@ -129,14 +129,14 @@ PHP_USTRING_API zend_int_t php_ustring_indexOf(zval *that, zval *needle, zend_in
     UnicodeString n, h;
     
     if (offset) {
-        h = UnicodeString(*ustring->val, (int32_t) offset);
+        h = UnicodeString(*ustring->val, offset);
     } else h = *ustring->val;
     
     switch (Z_TYPE_P(needle)) {
 		case IS_STRING:
 		    if (offset)
-		        n = UnicodeString(Z_STRVAL_P(needle), (int32_t)Z_STRSIZE_P(needle), ustring->codepage->val);
-		    else n = UnicodeString(Z_STRVAL_P(needle), (int32_t)Z_STRSIZE_P(needle), ustring->codepage->val);
+		        n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
+		    else n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
 		break;
 
 		case IS_OBJECT:
@@ -162,8 +162,8 @@ PHP_USTRING_API zend_int_t php_ustring_lastIndexOf(zval *that, zval *needle, zen
     switch (Z_TYPE_P(needle)) {
 		case IS_STRING:
 		    if (offset)
-		        n = UnicodeString(Z_STRVAL_P(needle), Z_STRSIZE_P(needle), ustring->codepage->val);
-		    else n = UnicodeString(Z_STRVAL_P(needle), Z_STRSIZE_P(needle), ustring->codepage->val);
+		        n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
+		    else n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
 		break;
 
 		case IS_OBJECT:
@@ -298,7 +298,7 @@ PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, zend_int
     
     switch (Z_TYPE_P(slice)) {
 		case IS_STRING:
-			s = UnicodeString(Z_STRVAL_P(slice), Z_STRSIZE_P(slice), ustring->codepage->val);
+			s = UnicodeString(Z_STRVAL_P(slice), (int32_t) Z_STRSIZE_P(slice), ustring->codepage->val);
 			break;
 
 		case IS_OBJECT:
@@ -332,7 +332,7 @@ PHP_USTRING_API zval* php_ustring_charAt(zval *that, zend_int_t offset, zval *fo
     php_ustring_t *ustring = php_ustring_fetch(that),
                   *ostring = NULL;
 
-    UChar c = ustring->val->charAt((int32_t)offset);
+    UChar c = ustring->val->charAt(offset);
 
 	if (c) {
 		object_init_ex(found, ce_UString);
@@ -404,7 +404,7 @@ PHP_USTRING_API zval* php_ustring_chunk(zval *that, zend_int_t length, zval *chu
         
         uchunk = php_ustring_fetch(&chunked);
         uchunk->codepage = STR_COPY(ustring->codepage);
-        uchunk->val = new UnicodeString(*ustring->val, position, (int32_t) length);
+        uchunk->val = new UnicodeString(*ustring->val, position, length);
         
         add_next_index_zval(chunks, &chunked);
         
@@ -498,7 +498,7 @@ PHP_METHOD(UString, endsWith) {
 PHP_METHOD(UString, indexOf) {
 	zval *needle;
     zend_int_t offset = 0;
-    int32_t index = -1;
+    zend_int_t index = -1;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &needle, &offset) != SUCCESS) {
 		return;
@@ -516,7 +516,7 @@ PHP_METHOD(UString, indexOf) {
 PHP_METHOD(UString, lastIndexOf) {
 	zval *needle;
     zend_int_t offset = 0;
-    int32_t index = -1;
+    zend_int_t index = -1;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &needle, &offset) != SUCCESS) {
 		return;
@@ -753,7 +753,7 @@ zend_function_entry php_ustring_methods[] = {
 /* {{{ */
 static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC) {
 	php_ustring_t *ustring;
-	uint32_t length = 0;
+	zend_int_t length = 0;
 
 	if (type != IS_STRING) {
 		return FAILURE;
@@ -797,7 +797,7 @@ static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1
 
 				switch (Z_TYPE_P(op1)) {
 					case IS_STRING: {
-						uresult->val->append(UnicodeString(Z_STRVAL_P(op1), Z_STRSIZE_P(op1)));
+						uresult->val->append(UnicodeString(Z_STRVAL_P(op1), (int32_t) Z_STRSIZE_P(op1)));
 					} break;
 
 					case IS_OBJECT: {
@@ -815,7 +815,7 @@ static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1
 
 			switch (Z_TYPE_P(op2)) {
 				case IS_STRING: {
-					uresult->val->append(UnicodeString(Z_STRVAL_P(op2), Z_STRSIZE_P(op2)));
+					uresult->val->append(UnicodeString(Z_STRVAL_P(op2), (int32_t) Z_STRSIZE_P(op2)));
 				} break;
 
 				case IS_OBJECT: {
@@ -893,7 +893,7 @@ PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 
 	switch (Z_TYPE_P(op1)) {
 		case IS_STRING:
-			us1 = UnicodeString(Z_STRVAL_P(op1), Z_STRSIZE_P(op1), UG(codepage)->val);
+			us1 = UnicodeString(Z_STRVAL_P(op1), (int32_t) Z_STRSIZE_P(op1), UG(codepage)->val);
 		break;
 
 		case IS_OBJECT:
@@ -910,7 +910,7 @@ PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 
 	switch (Z_TYPE_P(op2)) {
 		case IS_STRING:
-			us2 = UnicodeString(Z_STRVAL_P(op2), Z_STRSIZE_P(op2), UG(codepage)->val);
+			us2 = UnicodeString(Z_STRVAL_P(op2), (int32_t) Z_STRSIZE_P(op2), UG(codepage)->val);
 		break;
 
 		case IS_OBJECT:

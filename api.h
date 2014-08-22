@@ -58,7 +58,7 @@ PHP_USTRING_API int            php_ustring_compare(zval *op1, zval *op2 TSRMLS_D
 PHP_USTRING_API UnicodeString* php_ustring_value(zval *that TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getCodepage(zval *that TSRMLS_DC);
 
-PHP_USTRING_API void           php_ustring_setDefaultCodepage(const char *value, long len TSRMLS_DC);
+PHP_USTRING_API void           php_ustring_setDefaultCodepage(const char *value, zend_size_t len TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getDefaultCodepage(TSRMLS_D);
 
 PHP_USTRING_API zend_class_entry* ce_UString;

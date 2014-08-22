@@ -37,23 +37,23 @@ extern "C" {
 #    include "ext/standard/info.h"
 }
 
-PHP_USTRING_API void           php_ustring_construct(zval *that, const char *value, long len, const char *codepage, long clen TSRMLS_DC);
+PHP_USTRING_API void           php_ustring_construct(zval *that, const char *value, zend_size_t len, const char *codepage, zend_size_t clen TSRMLS_DC);
 PHP_USTRING_API zend_size_t    php_ustring_length(zval *that TSRMLS_DC);
 PHP_USTRING_API bool           php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC);
 PHP_USTRING_API bool           php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC);
-PHP_USTRING_API zend_int_t     php_ustring_indexOf(zval *that, zval *needle, long offset TSRMLS_DC);
-PHP_USTRING_API zend_int_t     php_ustring_lastIndexOf(zval *that, zval *needle, long offset TSRMLS_DC);
+PHP_USTRING_API zend_int_t     php_ustring_indexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC);
+PHP_USTRING_API zend_int_t     php_ustring_lastIndexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_toLower(zval *that, zval *lowered TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_toUpper(zval *that, zval *uppered TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_reverse(zval *that, zval *reversed TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_trim(zval *that, zval *trimmed TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_replace(zval *that, zval *search, zval *replace, zval *replaced TSRMLS_DC);
-PHP_USTRING_API zval*          php_ustring_replaceSlice(zval *that, zval *slice, long offset, long length, zval *replaced TSRMLS_DC);
-PHP_USTRING_API zval*          php_ustring_charAt(zval *that, long offset, zval *found TSRMLS_DC);
-PHP_USTRING_API zval*          php_ustring_substring(zval *that, long offset, long length, zval *sub TSRMLS_DC);
+PHP_USTRING_API zval*          php_ustring_replaceSlice(zval *that, zval *slice, zend_int_t offset, zend_int_t length, zval *replaced TSRMLS_DC);
+PHP_USTRING_API zval*          php_ustring_charAt(zval *that, zend_int_t offset, zval *found TSRMLS_DC);
+PHP_USTRING_API zval*          php_ustring_substring(zval *that, zend_int_t offset, zend_int_t length, zval *sub TSRMLS_DC);
 PHP_USTRING_API bool           php_ustring_contains(zval *that, zval *text TSRMLS_DC);
-PHP_USTRING_API zval*          php_ustring_chunk(zval *that, long length, zval *chunks TSRMLS_DC);
-PHP_USTRING_API zval*          php_ustring_repeat(zval *that, long count, zval *repeated TSRMLS_DC);
+PHP_USTRING_API zval*          php_ustring_chunk(zval *that, zend_int_t length, zval *chunks TSRMLS_DC);
+PHP_USTRING_API zval*          php_ustring_repeat(zval *that, zend_int_t count, zval *repeated TSRMLS_DC);
 PHP_USTRING_API int            php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC);
 PHP_USTRING_API UnicodeString* php_ustring_value(zval *that TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getCodepage(zval *that TSRMLS_DC);

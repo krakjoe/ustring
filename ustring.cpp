@@ -57,383 +57,95 @@ ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
 zend_object_handlers php_ustring_handlers;
 
-PHP_USTRING_API UnicodeString* php_ustring_value(zval *that TSRMLS_DC) {
-    return php_ustring_fetch(that)->val;
+/*
+ * Do some magical ifdef'ing maybe ?
+ */
+#include "backend/icu.cpp"
+
+PHP_USTRING_API php_ustring_handlers_t *php_ustring_backend = &php_ustring_defaults;
+
+PHP_USTRING_API void php_ustring_set_backend(php_ustring_handlers_t *handlers TSRMLS_DC) {
+    php_ustring_backend = handlers;
+}
+
+PHP_USTRING_API void* php_ustring_value(zval *that TSRMLS_DC) {
+    return php_ustring_backend->value(that TSRMLS_CC);
 }
 
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, zend_size_t vlen, const char *codepage, zend_size_t clen TSRMLS_DC) {
-    php_ustring_t* ustring;
-    
-    if (Z_TYPE_P(that) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(that), ce_UString TSRMLS_CC)) {
-        return;
-    }
-    
-    ustring = php_ustring_fetch(that);
-    
-    if (!codepage) {
-        ustring->codepage = STR_COPY(UG(codepage));
-    } else ustring->codepage = STR_INIT(codepage, clen, 0);
-    
-    ustring->val = new UnicodeString(value, vlen, ustring->codepage->val);
+    php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);
 }
 
 PHP_USTRING_API zend_size_t php_ustring_length(zval *that TSRMLS_DC) {
-    return (php_ustring_fetch(that))->val->length();
+    return php_ustring_backend->length(that TSRMLS_CC);
 }
 
 PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-
-    UnicodeString uneedle;
-    
-    switch (Z_TYPE_P(needle)) {
-		case IS_STRING:
-		    uneedle = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
-		break;
-
-		case IS_OBJECT:
-		    uneedle = *(php_ustring_fetch(needle))->val;
-		break;
-		
-		default:
-		    return false;
-	}
-	
-    return ustring->val->startsWith(uneedle);
+    return php_ustring_backend->startsWith(that, needle TSRMLS_CC);
 }
 
 PHP_USTRING_API bool php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-
-    UnicodeString uneedle;
-    
-    switch (Z_TYPE_P(needle)) {
-		case IS_STRING:
-		    uneedle = UnicodeString(Z_STRVAL_P(needle), (int32_t)Z_STRSIZE_P(needle), ustring->codepage->val);
-		break;
-
-		case IS_OBJECT:
-		    uneedle = *(php_ustring_fetch(needle))->val;
-		break;
-		
-		default:
-		    return false;
-	}
-	
-    return ustring->val->endsWith(uneedle);
+    return php_ustring_backend->endsWith(that, needle TSRMLS_CC);
 }
 
 PHP_USTRING_API zend_int_t php_ustring_indexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-
-    UnicodeString n, h;
-    
-    if (offset) {
-        h = UnicodeString(*ustring->val, offset);
-    } else h = *ustring->val;
-    
-    switch (Z_TYPE_P(needle)) {
-		case IS_STRING:
-		    if (offset)
-		        n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
-		    else n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
-		break;
-
-		case IS_OBJECT:
-		    n = *(php_ustring_fetch(needle))->val;
-		break;
-		
-		default:
-		    return -1;
-	}
-	
-    return h.indexOf(n);
+    return php_ustring_backend->indexOf(that, needle, offset TSRMLS_CC);
 }
 
 PHP_USTRING_API zend_int_t php_ustring_lastIndexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-
-    UnicodeString n, h;
-    
-    if (offset) {
-        h = UnicodeString(*ustring->val, offset);
-    } else h = *ustring->val;
-    
-    switch (Z_TYPE_P(needle)) {
-		case IS_STRING:
-		    if (offset)
-		        n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
-		    else n = UnicodeString(Z_STRVAL_P(needle), (int32_t) Z_STRSIZE_P(needle), ustring->codepage->val);
-		break;
-
-		case IS_OBJECT:
-		    n = *(php_ustring_fetch(needle))->val;
-		break;
-		
-		default:
-		    return -1;
-	}
-	
-    return h.lastIndexOf(n);
+    return php_ustring_backend->lastIndexOf(that, needle, offset TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_toLower(zval *that, zval *lowered TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring;
-    
-    object_init_ex(lowered, ce_UString);
-    
-    ostring = php_ustring_fetch(lowered);
-    ostring->val = new UnicodeString(*ustring->val);
-    ostring->val->toLower();
-    ostring->codepage = STR_COPY(ustring->codepage);
-    
-    return lowered;
+    return php_ustring_backend->toLower(that, lowered TSRMLS_CC);
 }
 
-PHP_USTRING_API zval* php_ustring_toUpper(zval *that, zval *upper TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring;
-    
-    object_init_ex(upper, ce_UString);
-    
-    ostring = php_ustring_fetch(upper);
-    ostring->val = new UnicodeString(*ustring->val);
-    ostring->val->toUpper();
-    ostring->codepage = STR_COPY(ustring->codepage);
-    
-    return upper;
+PHP_USTRING_API zval* php_ustring_toUpper(zval *that, zval *uppered TSRMLS_DC) {
+    return php_ustring_backend->toUpper(that, uppered TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_reverse(zval *that, zval *reversed TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring;
-    
-    object_init_ex(reversed, ce_UString);
-    
-    ostring = php_ustring_fetch(reversed);
-    ostring->val = new UnicodeString(*ustring->val);
-    ostring->val->reverse();
-    ostring->codepage = STR_COPY(ustring->codepage);
-
-    return reversed;
+    return php_ustring_backend->reverse(that, reversed TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_trim(zval *that, zval *trimmed TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring;
-    
-    object_init_ex(trimmed, ce_UString);
-    
-    ostring = php_ustring_fetch(trimmed);
-    ostring->val = new UnicodeString(*ustring->val);
-    ostring->val->trim();
-    ostring->codepage = STR_COPY(ustring->codepage);
-    
-    return trimmed;
+    return php_ustring_backend->trim(that, trimmed TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_replace(zval *that, zval *search, zval *replace, zval *replaced TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring;
-                  
-     UnicodeString s, r;
-    
-	switch (Z_TYPE_P(search)) {
-		case IS_STRING: {
-			s = UnicodeString(Z_STRVAL_P(search), (int32_t) Z_STRSIZE_P(search), ustring->codepage->val);
-
-			switch(Z_TYPE_P(replace)) {
-				case IS_STRING:
-					r = UnicodeString(Z_STRVAL_P(replace), (int32_t) Z_STRSIZE_P(replace), ustring->codepage->val);
-				break;
-
-				case IS_OBJECT: {
-					r = *(php_ustring_fetch(replace))->val;
-				} break;
-
-				default:
-					return NULL;
-			}
-		}
-		break;
-
-		case IS_OBJECT: {
-			s = *(php_ustring_fetch(search))->val;
-
-			switch(Z_TYPE_P(replace)) {
-				case IS_OBJECT:
-					r = *(php_ustring_fetch(replace))->val;
-				break;
-
-				case IS_STRING:
-					r = UnicodeString(Z_STRVAL_P(replace), (int32_t) Z_STRSIZE_P(replace), ustring->codepage->val);
-				break;
-
-				default:
-					return NULL;
-			}
-		}
-		break;
-
-		default:
-			return NULL;
-	}
-    
-    object_init_ex(replaced, ce_UString);
-    
-    ostring = php_ustring_fetch(replaced);
-    ostring->val = new UnicodeString(*ustring->val);
-    ostring->codepage = STR_COPY(ustring->codepage);
-	ostring->val->findAndReplace(s, r);
-	
-	return replaced;
+    return php_ustring_backend->replace(that, search, replace, replaced TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, zend_int_t offset, zend_int_t length, zval *replaced TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring;
-
-    UnicodeString s;
-    
-    switch (Z_TYPE_P(slice)) {
-		case IS_STRING:
-			s = UnicodeString(Z_STRVAL_P(slice), (int32_t) Z_STRSIZE_P(slice), ustring->codepage->val);
-			break;
-
-		case IS_OBJECT:
-			if (!instanceof_function(Z_OBJCE_P(slice), ce_UString TSRMLS_CC)) {
-				return NULL;
-			}
-
-			s = *(php_ustring_fetch(slice))->val;
-			break;
-
-		default:
-			return NULL;
-	}
-
-	if (offset == -1)
-		offset = 0;
-	if (length == -1)
-		length = s.length() - offset;
-    
-    object_init_ex(replaced, ce_UString);
-    
-    ostring = php_ustring_fetch(replaced);
-    ostring->val = new UnicodeString(*ustring->val);
-    ostring->codepage = STR_COPY(ustring->codepage);
-    ostring->val->replace(offset, length, s, 0, s.length());
-    
-    return replaced;
+    return php_ustring_backend->replaceSlice(that, slice, offset, length, replaced TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_charAt(zval *that, zend_int_t offset, zval *found TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-                  *ostring = NULL;
-
-    UChar c = ustring->val->charAt(offset);
-
-	if (c) {
-		object_init_ex(found, ce_UString);
-
-		ostring = php_ustring_fetch(found);
-		ostring->val = new UnicodeString(&c, 1);
-		ostring->codepage = STR_COPY(ustring->codepage);
-	}
-	
-	return found;
+    return php_ustring_backend->charAt(that, offset, found TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_substring(zval *that, zend_int_t offset, zend_int_t length, zval *sub TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that),
-				  *ostring;
-    
-	if (offset < 0) {
-	    return NULL;
-	}
-	
-	if (length == -1)
-	    length = ustring->val->length() - offset;
-	    
-	object_init_ex(sub, ce_UString);
-	
-	ostring = php_ustring_fetch(sub);
-	ostring->codepage = STR_COPY(ustring->codepage);
-	ostring->val = new UnicodeString(*ustring->val, offset, length);
-	
-	return sub;
+    return php_ustring_backend->substring(that, offset, length, sub);
 }
 
 PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-
-    UnicodeString t;
-    
-    switch (Z_TYPE_P(text)) {
-        case IS_STRING:
-            t = UnicodeString(Z_STRVAL_P(text), (int32_t) Z_STRSIZE_P(text), ustring->codepage->val);
-        break;
-        
-        case IS_OBJECT:
-            if (!instanceof_function(Z_OBJCE_P(text), ce_UString TSRMLS_CC)) {
-                return false;
-            }
-            
-            t = *(php_ustring_fetch(text))->val;
-        break;
-    }
-    
-    return (ustring->val->indexOf(t) >= 0);
+    return php_ustring_backend->contains(that, text TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_chunk(zval *that, zend_int_t length, zval *chunks TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-    zend_int_t position = 0;
-    
-    array_init(chunks);
-    
-    if (!length) 
-        length = 1;
-    
-    while (position < ustring->val->length()) {
-        zval chunked;
-        php_ustring_t *uchunk;
-        
-        object_init_ex(&chunked, ce_UString);
-        
-        uchunk = php_ustring_fetch(&chunked);
-        uchunk->codepage = STR_COPY(ustring->codepage);
-        uchunk->val = new UnicodeString(*ustring->val, position, length);
-        
-        add_next_index_zval(chunks, &chunked);
-        
-        position += length;
-    }
-    
-    return chunks;
+    return php_ustring_backend->chunk(that, length, chunks TSRMLS_CC);
 }
 
 PHP_USTRING_API zval* php_ustring_repeat(zval *that, zend_int_t count, zval *repeated TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(getThis()), 
-                  *urepeat;
-    zend_int_t current = 0;
-    
-    object_init_ex(repeated, ce_UString);
-    
-    urepeat = php_ustring_fetch(repeated);
-    urepeat->codepage = STR_COPY(ustring->codepage);
-    urepeat->val = new UnicodeString(*ustring->val);
-    
-    while (++current < count) {
-        urepeat->val->append((*ustring->val));
-    }
-    
-    return repeated;
+    return php_ustring_backend->repeat(that, count, repeated TSRMLS_CC);
 }
 
 PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC) {
-    return (php_ustring_fetch(that))->codepage;
+    return php_ustring_backend->getCodepage(that TSRMLS_CC);
+}
+
+PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
+	return php_ustring_backend->compare(op1, op2 TSRMLS_CC);
 }
 
 PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, zend_int_t len TSRMLS_DC) {
@@ -885,47 +597,6 @@ static inline zval* php_ustring_read(zval *object, zval *offset, int type, zval 
 		zval_ptr_dtor(offset);
 
 	return rv;
-} /* }}} */
-
-/* {{{ */
-PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
-	UnicodeString us1, us2;
-
-	switch (Z_TYPE_P(op1)) {
-		case IS_STRING:
-			us1 = UnicodeString(Z_STRVAL_P(op1), (int32_t) Z_STRSIZE_P(op1), UG(codepage)->val);
-		break;
-
-		case IS_OBJECT:
-			if (!instanceof_function(Z_OBJCE_P(op1), ce_UString TSRMLS_CC)) {
-				return 0;
-			}
-
-			us1 = *(php_ustring_fetch(op1))->val;
-		break;
-
-		default:
-			return 0;
-	}
-
-	switch (Z_TYPE_P(op2)) {
-		case IS_STRING:
-			us2 = UnicodeString(Z_STRVAL_P(op2), (int32_t) Z_STRSIZE_P(op2), UG(codepage)->val);
-		break;
-
-		case IS_OBJECT:
-			if (!instanceof_function(Z_OBJCE_P(op2), ce_UString TSRMLS_CC)) {
-				return 0;
-			}
-
-			us2 = *(php_ustring_fetch(op2))->val;
-		break;
-
-		default:
-			return 0;
-	}
-
-	return us1.compare(us2);
 } /* }}} */
 
 /* {{{ */

@@ -96,7 +96,7 @@ typedef int                     (*php_ustring_compare_f)           (zval *op1, z
 /* {{{ */
 typedef struct _php_ustring_backend_t {
     /*
-    * The following elements fulfill the user API for UString
+    * The following elements fulfill the PHP API for UString
     */
     php_ustring_construct_f    construct;
     php_ustring_length_f       length;
@@ -126,10 +126,6 @@ typedef struct _php_ustring_backend_t {
     php_ustring_operate_f      operate;
     php_ustring_cast_f         cast;
     php_ustring_read_f         read;
-
-    /**
-    * Note: the compare function is shared between user and Zend API
-    **/
     php_ustring_compare_f      compare;
     zend_ulong                 offset;
 } php_ustring_backend_t; /* }}} */

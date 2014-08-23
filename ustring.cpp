@@ -440,16 +440,6 @@ zend_function_entry php_ustring_methods[] = {
 }; /* }}} */
 
 /* {{{ */
-static inline int php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_DC) {
-	return php_ustring_backend->cast(zread, zwrite, type TSRMLS_CC);
-} /* }}} */
-
-/* {{{ */
-static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2 TSRMLS_DC) {
-	return php_ustring_backend->operate(opcode, result, op1, op2 TSRMLS_CC);
-} /* }}} */
-
-/* {{{ */
 static inline void php_ustring_globals_ctor(zend_ustring_globals  *ug TSRMLS_DC) {
 	ug->codepage = NULL;
 } /* }}} */

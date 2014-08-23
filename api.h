@@ -37,6 +37,7 @@ extern "C" {
 #    include "ext/standard/info.h"
 }
 
+/* {{{ */
 PHP_USTRING_API void           php_ustring_construct(zval *that, const char *value, zend_size_t len, const char *codepage, zend_size_t clen TSRMLS_DC);
 PHP_USTRING_API zend_size_t    php_ustring_length(zval *that TSRMLS_DC);
 PHP_USTRING_API bool           php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC);
@@ -55,14 +56,15 @@ PHP_USTRING_API bool           php_ustring_contains(zval *that, zval *text TSRML
 PHP_USTRING_API zval*          php_ustring_chunk(zval *that, zend_int_t length, zval *chunks TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_repeat(zval *that, zend_int_t count, zval *repeated TSRMLS_DC);
 PHP_USTRING_API int            php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC);
-PHP_USTRING_API void*          php_ustring_value(zval *that TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getCodepage(zval *that TSRMLS_DC);
 
 PHP_USTRING_API void           php_ustring_setDefaultCodepage(const char *value, zend_size_t len TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getDefaultCodepage(TSRMLS_D);
 
 PHP_USTRING_API zend_class_entry* ce_UString;
+/* }}} */
 
+/* {{{ */
 typedef void         (*php_ustring_construct_f)         (zval *that, const char *value, zend_size_t len, const char *codepage, zend_size_t clen TSRMLS_DC);
 typedef zend_size_t  (*php_ustring_length_f)            (zval *that TSRMLS_DC);
 typedef bool         (*php_ustring_startsWith_f)        (zval *that, zval *needle TSRMLS_DC);
@@ -80,11 +82,22 @@ typedef zval*        (*php_ustring_substring_f)         (zval *that, zend_int_t 
 typedef bool         (*php_ustring_contains_f)          (zval *that, zval *text TSRMLS_DC);
 typedef zval*        (*php_ustring_chunk_f)             (zval *that, zend_int_t length, zval *chunks TSRMLS_DC);
 typedef zval*        (*php_ustring_repeat_f)            (zval *that, zend_int_t count, zval *repeated TSRMLS_DC);
-typedef int          (*php_ustring_compare_f)           (zval *op1, zval *op2 TSRMLS_DC);
-typedef void*        (*php_ustring_value_f)             (zval *that TSRMLS_DC);
 typedef zend_string* (*php_ustring_getCodepage_f)       (zval *that TSRMLS_DC);
 
-typedef struct _php_ustring_handlers_t {
+typedef zend_object*            (*php_ustring_create_f)            (zend_class_entry *ce TSRMLS_DC);
+typedef void                    (*php_ustring_release_f)           (zend_object *zobject TSRMLS_DC);
+typedef zend_object_iterator*   (*php_ustring_iterator_f)          (zend_class_entry *ce, zval *zobject, int by_ref TSRMLS_DC);
+typedef int                     (*php_ustring_operate_f)           (zend_uchar opcode, zval *result, zval *op1, zval *op2 TSRMLS_DC);
+typedef int                     (*php_ustring_cast_f)              (zval *zread, zval *zwrite, int type TSRMLS_DC);
+typedef zval*                   (*php_ustring_read_f)              (zval *object, zval *offset, int type, zval *rv TSRMLS_DC);
+typedef int                     (*php_ustring_compare_f)           (zval *op1, zval *op2 TSRMLS_DC);
+/* }}} */
+
+/* {{{ */
+typedef struct _php_ustring_backend_t {
+    /*
+    * The following elements fulfill the user API for UString
+    */
     php_ustring_construct_f    construct;
     php_ustring_length_f       length;
     php_ustring_startsWith_f   startsWith;
@@ -102,12 +115,24 @@ typedef struct _php_ustring_handlers_t {
     php_ustring_contains_f     contains;
     php_ustring_chunk_f        chunk;
     php_ustring_repeat_f       repeat;
-    php_ustring_compare_f      compare;
-    php_ustring_value_f        value;
     php_ustring_getCodepage_f  getCodepage;
-} php_ustring_handlers_t;
+    
+    /**
+    * The remaining elements fulfill the Zend API for UString
+    **/
+    php_ustring_create_f       create;
+    php_ustring_release_f      release;
+    php_ustring_iterator_f     iterator;
+    php_ustring_operate_f      operate;
+    php_ustring_cast_f         cast;
+    php_ustring_read_f         read;
 
-PHP_USTRING_API void php_ustring_set_backend(php_ustring_handlers_t *handlers TSRMLS_DC);
+    /**
+    * Note: the compare function is shared between user and Zend API
+    **/
+    php_ustring_compare_f      compare;
+    zend_ulong                 offset;
+} php_ustring_backend_t; /* }}} */
 
 #endif	/* PHP_USTRING_API_H */
 

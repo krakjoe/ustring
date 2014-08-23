@@ -20,6 +20,8 @@
 
 #include "unicode/unistr.h"
 
+#include "backend/api.h"
+
 typedef struct _php_ustring_t {
 	UnicodeString *val;
 	zend_string   *codepage;

@@ -29,8 +29,6 @@
 #	define PHP_USTRING_API
 #endif
 
-#include "unicode/unistr.h"
-
 extern "C" {
 #    include "php.h"
 #    include "php_ini.h"

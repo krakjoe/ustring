@@ -33,7 +33,9 @@ typedef struct _php_ustring_iterator_t {
 
 #define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
 
-static inline void _php_ustring_release(zend_object *zobject TSRMLS_DC) {
+zend_object_handlers php_ustring_handlers;
+
+static inline void _php_ustring_free(zend_object *zobject TSRMLS_DC) {
 	php_ustring_t *ustring = (php_ustring_t*)((char*)(zobject) - XtOffsetOf(php_ustring_t, std));
 
 	zend_object_std_dtor(&ustring->std TSRMLS_CC);
@@ -660,6 +662,23 @@ static inline zend_string* _php_ustring_getCodepage(zval *that TSRMLS_DC) {
     return (php_ustring_fetch(that))->codepage;
 }
 
+static inline void _php_ustring_initialize(zend_class_entry **pce TSRMLS_DC) {
+    (*pce)->create_object = _php_ustring_create;
+	(*pce)->get_iterator =  _php_ustring_iterator;
+
+	memcpy(
+		&php_ustring_handlers,
+		zend_get_std_object_handlers(),
+		sizeof(zend_object_handlers));
+
+	php_ustring_handlers.free_obj = _php_ustring_free;
+	php_ustring_handlers.do_operation = _php_ustring_operate;
+	php_ustring_handlers.cast_object = _php_ustring_cast;
+	php_ustring_handlers.read_dimension = _php_ustring_read;
+	php_ustring_handlers.compare_objects = _php_ustring_compare;
+	php_ustring_handlers.offset   = XtOffsetOf(php_ustring_t, std);
+}
+
 php_ustring_backend_t php_ustring_defaults = {
     _php_ustring_construct,
     _php_ustring_length,
@@ -679,15 +698,8 @@ php_ustring_backend_t php_ustring_defaults = {
     _php_ustring_chunk,
     _php_ustring_repeat,
     _php_ustring_getCodepage,
-    
-    _php_ustring_create,
-    _php_ustring_release,
-    _php_ustring_iterator,
-    _php_ustring_operate,
-    _php_ustring_cast,
-    _php_ustring_read,
     _php_ustring_compare,
-    XtOffsetOf(php_ustring_t, std),
+    _php_ustring_initialize,
 };
 
 #endif

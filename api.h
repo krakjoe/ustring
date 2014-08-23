@@ -81,21 +81,12 @@ typedef bool         (*php_ustring_contains_f)          (zval *that, zval *text 
 typedef zval*        (*php_ustring_chunk_f)             (zval *that, zend_int_t length, zval *chunks TSRMLS_DC);
 typedef zval*        (*php_ustring_repeat_f)            (zval *that, zend_int_t count, zval *repeated TSRMLS_DC);
 typedef zend_string* (*php_ustring_getCodepage_f)       (zval *that TSRMLS_DC);
-
-typedef zend_object*            (*php_ustring_create_f)            (zend_class_entry *ce TSRMLS_DC);
-typedef void                    (*php_ustring_release_f)           (zend_object *zobject TSRMLS_DC);
-typedef zend_object_iterator*   (*php_ustring_iterator_f)          (zend_class_entry *ce, zval *zobject, int by_ref TSRMLS_DC);
-typedef int                     (*php_ustring_operate_f)           (zend_uchar opcode, zval *result, zval *op1, zval *op2 TSRMLS_DC);
-typedef int                     (*php_ustring_cast_f)              (zval *zread, zval *zwrite, int type TSRMLS_DC);
-typedef zval*                   (*php_ustring_read_f)              (zval *object, zval *offset, int type, zval *rv TSRMLS_DC);
-typedef int                     (*php_ustring_compare_f)           (zval *op1, zval *op2 TSRMLS_DC);
+typedef int          (*php_ustring_compare_f)           (zval *op1, zval *op2 TSRMLS_DC);
+typedef void         (*php_ustring_initialize_f)        (zend_class_entry **ce TSRMLS_DC);
 /* }}} */
 
 /* {{{ */
 typedef struct _php_ustring_backend_t {
-    /*
-    * The following elements fulfill the PHP API for UString
-    */
     php_ustring_construct_f    construct;
     php_ustring_length_f       length;
     php_ustring_startsWith_f   startsWith;
@@ -114,18 +105,8 @@ typedef struct _php_ustring_backend_t {
     php_ustring_chunk_f        chunk;
     php_ustring_repeat_f       repeat;
     php_ustring_getCodepage_f  getCodepage;
-    
-    /**
-    * The remaining elements fulfill the Zend API for UString
-    **/
-    php_ustring_create_f       create;
-    php_ustring_release_f      release;
-    php_ustring_iterator_f     iterator;
-    php_ustring_operate_f      operate;
-    php_ustring_cast_f         cast;
-    php_ustring_read_f         read;
     php_ustring_compare_f      compare;
-    zend_ulong                 offset;
+    php_ustring_initialize_f   initialize;
 } php_ustring_backend_t; /* }}} */
 
 #endif	/* PHP_USTRING_API_H */

@@ -40,8 +40,6 @@ ZEND_DECLARE_MODULE_GLOBALS(ustring);
 #define UG(v) (ustring_globals.v)
 #endif
 
-zend_object_handlers php_ustring_handlers;
-
 /*
  * Do some magical ifdef'ing maybe ?
  */
@@ -455,20 +453,8 @@ PHP_MINIT_FUNCTION(ustring)
 	ZEND_INIT_MODULE_GLOBALS(ustring, php_ustring_globals_ctor, NULL);
 
 	ce_UString = zend_register_internal_class(&ce TSRMLS_CC);
-	ce_UString->create_object = php_ustring_backend->create;
-	ce_UString->get_iterator = php_ustring_backend->iterator;
-
-	memcpy(
-		&php_ustring_handlers,
-		zend_get_std_object_handlers(),
-		sizeof(zend_object_handlers));
-
-	php_ustring_handlers.free_obj = php_ustring_backend->release;
-	php_ustring_handlers.do_operation = php_ustring_backend->operate;
-	php_ustring_handlers.cast_object = php_ustring_backend->cast;
-	php_ustring_handlers.read_dimension = php_ustring_backend->read;
-	php_ustring_handlers.compare_objects = php_ustring_backend->compare;
-	php_ustring_handlers.offset   = php_ustring_backend->offset;
+    
+    php_ustring_backend->initialize(&ce_UString TSRMLS_DC);
 	
 	return SUCCESS;
 }

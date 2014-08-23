@@ -18,8 +18,6 @@
 #ifndef PHP_USTRING_BACKEND_ICU
 #define PHP_USTRING_BACKEND_ICU
 
-#include "unicode/unistr.h"
-
 typedef struct _php_ustring_t {
 	UnicodeString *val;
 	zend_string   *codepage;

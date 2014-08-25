@@ -98,7 +98,7 @@ PHP_USTRING_API zval* php_ustring_charAt(zval *that, zend_int_t offset, zval *fo
 }
 
 PHP_USTRING_API zval* php_ustring_substring(zval *that, zend_int_t offset, zend_int_t length, zval *sub TSRMLS_DC) {
-    return php_ustring_backend->substring(that, offset, length, sub);
+    return php_ustring_backend->substring(that, offset, length, sub TSRMLS_CC);
 }
 
 PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC) {
@@ -348,7 +348,7 @@ PHP_METHOD(UString, setDefaultCodepage) {
 		return;
 	}
 
-	php_ustring_setDefaultCodepage(codepage, clen TSRMLS_CC);
+	php_ustring_setDefaultCodepage(codepage, (zend_int_t)clen TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto string UString::getDefaultCodepage(void) */
@@ -452,7 +452,7 @@ PHP_MINIT_FUNCTION(ustring)
 
 	ce_UString = zend_register_internal_class(&ce TSRMLS_CC);
     
-    php_ustring_backend->initialize(&ce_UString TSRMLS_DC);
+    php_ustring_backend->initialize(&ce_UString TSRMLS_CC);
 	
 	return SUCCESS;
 }

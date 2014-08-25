@@ -54,6 +54,7 @@ PHP_USTRING_API bool           php_ustring_contains(zval *that, zval *text TSRML
 PHP_USTRING_API zval*          php_ustring_chunk(zval *that, zend_int_t length, zval *chunks TSRMLS_DC);
 PHP_USTRING_API zval*          php_ustring_repeat(zval *that, zend_int_t count, zval *repeated TSRMLS_DC);
 PHP_USTRING_API int            php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC);
+PHP_USTRING_API zval*          php_ustring_pad(zval *that, int32_t target_len, zval *pad, int mode, zval *padded TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getCodepage(zval *that TSRMLS_DC);
 
 PHP_USTRING_API void           php_ustring_setDefaultCodepage(const char *value, zend_size_t len TSRMLS_DC);

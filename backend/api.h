@@ -39,6 +39,7 @@ typedef zval*        (*php_ustring_substring_f)         (zval *that, zend_int_t 
 typedef bool         (*php_ustring_contains_f)          (zval *that, zval *text TSRMLS_DC);
 typedef zval*        (*php_ustring_chunk_f)             (zval *that, zend_int_t length, zval *chunks TSRMLS_DC);
 typedef zval*        (*php_ustring_repeat_f)            (zval *that, zend_int_t count, zval *repeated TSRMLS_DC);
+typedef zval*        (*php_ustring_pad_f)               (zval *that, int32_t target_len, zval *pad, int mode, zval *padded TSRMLS_DC);
 typedef zend_string* (*php_ustring_getCodepage_f)       (zval *that TSRMLS_DC);
 typedef int          (*php_ustring_compare_f)           (zval *op1, zval *op2 TSRMLS_DC);
 typedef void         (*php_ustring_initialize_f)        (zend_class_entry **ce TSRMLS_DC);
@@ -63,6 +64,7 @@ typedef struct _php_ustring_backend_t {
     php_ustring_contains_f     contains;
     php_ustring_chunk_f        chunk;
     php_ustring_repeat_f       repeat;
+	php_ustring_pad_f          pad;
     php_ustring_getCodepage_f  getCodepage;
     php_ustring_compare_f      compare;
     php_ustring_initialize_f   initialize;

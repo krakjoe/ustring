@@ -33,7 +33,8 @@ extern zend_module_entry ustring_module_entry;
 #endif
 
 ZEND_BEGIN_MODULE_GLOBALS(ustring)
-    zend_string *codepage;
+	zend_string *codepage;
+	zval defaultpad;
 ZEND_END_MODULE_GLOBALS(ustring)
 
 #endif	/* PHP_USTRING_H */

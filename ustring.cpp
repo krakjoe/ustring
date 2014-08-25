@@ -113,6 +113,10 @@ PHP_USTRING_API zval* php_ustring_repeat(zval *that, zend_int_t count, zval *rep
     return php_ustring_backend->repeat(that, count, repeated TSRMLS_CC);
 }
 
+PHP_USTRING_API zval* php_ustring_pad(zval *that, int32_t target_len, zval *pad, int mode, zval *padded TSRMLS_DC) {
+	return php_ustring_backend->pad(that, target_len, pad, mode, padded TSRMLS_CC);
+}
+
 PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC) {
     return php_ustring_backend->getCodepage(that TSRMLS_CC);
 }
@@ -330,6 +334,23 @@ PHP_METHOD(UString, repeat) {
     php_ustring_repeat(getThis(), count, return_value TSRMLS_CC);
 } /* }}} */
 
+/* {{{ proto UString UString::pad(int length, UString pad = " ", int mode = STR_PAD_RIGHT) */
+PHP_METHOD(UString, pad) {
+	zend_int_t length;
+	zval*      pad = NULL;
+	zend_int_t mode = STR_PAD_RIGHT;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|zl", &length, &pad, &mode) != SUCCESS) {
+		return;
+	}
+
+	if (!pad) {
+		pad = &UG(defaultpad);
+	}
+
+	php_ustring_pad(getThis(), length, pad, mode, return_value TSRMLS_CC);
+}
+
 /* {{{ proto string UString::getCodepage(void) */
 PHP_METHOD(UString, getCodepage) {
 	if (zend_parse_parameters_none() != SUCCESS) {
@@ -406,6 +427,12 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_repeat_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, count)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_pad_arginfo, 0, 0, 1)
+	ZEND_ARG_INFO(0, length)
+	ZEND_ARG_INFO(0, pad)
+	ZEND_ARG_INFO(0, mode)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, codepage)
 ZEND_END_ARG_INFO() /* }}} */
@@ -427,6 +454,7 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, contains, php_ustring_contains_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, chunk, php_ustring_chunk_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, repeat, php_ustring_repeat_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, pad, php_ustring_pad_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, substring, php_ustring_substring_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
@@ -463,6 +491,7 @@ PHP_MINIT_FUNCTION(ustring)
 PHP_RINIT_FUNCTION(ustring)
 {
 	UG(codepage) = STR_INIT("UTF-8", sizeof("UTF-8")-1, 0);
+	ZVAL_NEW_STR(&UG(defaultpad), STR_INIT(" ", 1, 0));
 
 	return SUCCESS;
 }
@@ -473,6 +502,7 @@ PHP_RINIT_FUNCTION(ustring)
 PHP_RSHUTDOWN_FUNCTION(ustring)
 {
 	STR_RELEASE(UG(codepage));
+	zval_dtor(&UG(defaultpad));
 
 	return SUCCESS;
 }

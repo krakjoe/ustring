@@ -37,6 +37,10 @@ typedef struct _php_ustring_iterator_t {
 
 #define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
 
+#define STR_PAD_LEFT            0
+#define STR_PAD_RIGHT           1
+#define STR_PAD_BOTH            2
+
 zend_object_handlers php_ustring_handlers;
 
 static inline void _php_ustring_free(zend_object *zobject TSRMLS_DC) {
@@ -662,6 +666,81 @@ static inline int _php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 	return us1.compare(us2);
 }
 
+static inline zval* _php_ustring_pad(zval *that, int32_t targetLength, zval *pad, int mode, zval *result TSRMLS_DC) {
+	php_ustring_t *ustring = php_ustring_fetch(that),
+	              *ostring;
+	UnicodeString padString;
+	int32_t       sourceLength = ustring->val->length();
+	int32_t       padLength, leftPadLength, rightPadLength, padStringLength, i;
+
+	switch (Z_TYPE_P(pad)) {
+		case IS_STRING:
+			padString = UnicodeString(Z_STRVAL_P(pad), (int32_t)Z_STRSIZE_P(pad), UG(codepage)->val);
+			padStringLength = (int32_t)Z_STRSIZE_P(pad);
+			break;
+
+		case IS_OBJECT:
+			padString = *(php_ustring_fetch(pad))->val;
+			padStringLength = padString.length();
+			break;
+
+		default:
+			return NULL;
+	}
+
+	object_init_ex(result, ce_UString);
+
+	ostring = php_ustring_fetch(result);
+	ostring->codepage = STR_COPY(ustring->codepage);
+
+	if (padStringLength < 1 || targetLength < 0 || targetLength <= sourceLength) {
+		ostring->val = new UnicodeString(*ustring->val);
+		return result;
+	}
+
+	if (padStringLength == 1 && mode != STR_PAD_BOTH) {
+		ostring->val = new UnicodeString(*ustring->val);
+
+		if (mode == STR_PAD_LEFT) {
+			ostring->val->padLeading(targetLength, padString.charAt(0));
+		} else {
+			ostring->val->padTrailing(targetLength, padString.charAt(0));
+		}
+
+		return result;
+	}
+
+	ostring->val = new UnicodeString();
+	padLength = targetLength - sourceLength;
+
+	switch (mode) {
+		case STR_PAD_RIGHT:
+			leftPadLength = 0;
+			rightPadLength = padLength;
+			break;
+
+		case STR_PAD_LEFT:
+			leftPadLength = padLength;
+			rightPadLength = 0;
+			break;
+
+		case STR_PAD_BOTH:
+			leftPadLength = padLength / 2;
+			rightPadLength = padLength - leftPadLength;
+			break;
+	}
+
+	for (i = 0; i < leftPadLength; ++i) {
+		ostring->val->append(padString.charAt(i % padStringLength));
+	}
+	ostring->val->append(*ustring->val);
+	for (i = 0; i < rightPadLength; ++i) {
+		ostring->val->append(padString.charAt(i % padStringLength));
+	}
+
+	return result;
+}
+
 static inline zend_string* _php_ustring_getCodepage(zval *that TSRMLS_DC) {
     return (php_ustring_fetch(that))->codepage;
 }
@@ -701,6 +780,7 @@ php_ustring_backend_t php_ustring_defaults = {
     _php_ustring_contains,
     _php_ustring_chunk,
     _php_ustring_repeat,
+	_php_ustring_pad,
     _php_ustring_getCodepage,
     _php_ustring_compare,
     _php_ustring_initialize,

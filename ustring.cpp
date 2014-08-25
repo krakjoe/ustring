@@ -45,90 +45,6 @@ ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
 PHP_USTRING_API php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
 
-PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, zend_size_t vlen, const char *codepage, zend_size_t clen TSRMLS_DC) {
-    php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);
-}
-
-PHP_USTRING_API zend_size_t php_ustring_length(zval *that TSRMLS_DC) {
-    return php_ustring_backend->length(that TSRMLS_CC);
-}
-
-PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) {
-    return php_ustring_backend->startsWith(that, needle TSRMLS_CC);
-}
-
-PHP_USTRING_API bool php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC) {
-    return php_ustring_backend->endsWith(that, needle TSRMLS_CC);
-}
-
-PHP_USTRING_API zend_int_t php_ustring_indexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC) {
-    return php_ustring_backend->indexOf(that, needle, offset TSRMLS_CC);
-}
-
-PHP_USTRING_API zend_int_t php_ustring_lastIndexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC) {
-    return php_ustring_backend->lastIndexOf(that, needle, offset TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_toLower(zval *that, zval *lowered TSRMLS_DC) {
-    return php_ustring_backend->toLower(that, lowered TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_toUpper(zval *that, zval *uppered TSRMLS_DC) {
-    return php_ustring_backend->toUpper(that, uppered TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_reverse(zval *that, zval *reversed TSRMLS_DC) {
-    return php_ustring_backend->reverse(that, reversed TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_trim(zval *that, zval *trimmed TSRMLS_DC) {
-    return php_ustring_backend->trim(that, trimmed TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_replace(zval *that, zval *search, zval *replace, zval *replaced TSRMLS_DC) {
-    return php_ustring_backend->replace(that, search, replace, replaced TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, zend_int_t offset, zend_int_t length, zval *replaced TSRMLS_DC) {
-    return php_ustring_backend->replaceSlice(that, slice, offset, length, replaced TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_charAt(zval *that, zend_int_t offset, zval *found TSRMLS_DC) {
-    return php_ustring_backend->charAt(that, offset, found TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_substring(zval *that, zend_int_t offset, zend_int_t length, zval *sub TSRMLS_DC) {
-    return php_ustring_backend->substring(that, offset, length, sub TSRMLS_CC);
-}
-
-PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC) {
-    return php_ustring_backend->contains(that, text TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_chunk(zval *that, zend_int_t length, zval *chunks TSRMLS_DC) {
-    return php_ustring_backend->chunk(that, length, chunks TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_repeat(zval *that, zend_int_t count, zval *repeated TSRMLS_DC) {
-    return php_ustring_backend->repeat(that, count, repeated TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_pad(zval *that, int32_t target_len, zval *pad, int mode, zval *padded TSRMLS_DC) {
-	return php_ustring_backend->pad(that, target_len, pad, mode, padded TSRMLS_CC);
-}
-
-PHP_USTRING_API zval* php_ustring_split(zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC) {
-	return php_ustring_backend->split(that, delimiter, limit, pieces TSRMLS_CC);
-}
-
-PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC) {
-    return php_ustring_backend->getCodepage(that TSRMLS_CC);
-}
-
-PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
-	return php_ustring_backend->compare(op1, op2 TSRMLS_CC);
-}
-
 PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, zend_int_t len TSRMLS_DC) {
     STR_RELEASE(UG(codepage));
 
@@ -152,7 +68,7 @@ PHP_METHOD(UString, __construct)
 		return;
 	}
 
-	php_ustring_construct(getThis(), value, vlen, codepage, clen TSRMLS_CC);
+	php_ustring_backend->construct(getThis(), value, vlen, codepage, clen TSRMLS_CC);
 }
 /* }}} */
 
@@ -162,7 +78,7 @@ PHP_METHOD(UString, length) {
 		return;
 	}
 
-	RETURN_INT(php_ustring_length(getThis() TSRMLS_CC));
+	RETURN_INT(php_ustring_backend->length(getThis() TSRMLS_CC));
 } /* }}} */
 
 /* {{{ proto bool UString::startsWith(UString needle) */
@@ -173,7 +89,7 @@ PHP_METHOD(UString, startsWith) {
 		return;
 	}
 
-	RETURN_BOOL(php_ustring_startsWith(getThis(), needle TSRMLS_CC));
+	RETURN_BOOL(php_ustring_backend->startsWith(getThis(), needle TSRMLS_CC));
 } /* }}} */
 
 /* {{{ proto bool UString::endsWith(UString needle]) */
@@ -184,7 +100,7 @@ PHP_METHOD(UString, endsWith) {
 		return;
 	}
 	
-	RETURN_BOOL(php_ustring_endsWith(getThis(), needle TSRMLS_CC));
+	RETURN_BOOL(php_ustring_backend->endsWith(getThis(), needle TSRMLS_CC));
 } /* }}} */
 
 /* {{{ proto mixed UString::indexOf(UString needle [, int $offset]) */
@@ -197,7 +113,7 @@ PHP_METHOD(UString, indexOf) {
 		return;
 	}
 	
-	index = php_ustring_indexOf(getThis(), needle, offset TSRMLS_CC);
+	index = php_ustring_backend->indexOf(getThis(), needle, offset TSRMLS_CC);
 	
 	if (index < 0)
 	    RETURN_FALSE;
@@ -215,7 +131,7 @@ PHP_METHOD(UString, lastIndexOf) {
 		return;
 	}
 
-	index = php_ustring_lastIndexOf(getThis(), needle, offset TSRMLS_CC);
+	index = php_ustring_backend->lastIndexOf(getThis(), needle, offset TSRMLS_CC);
 
 	if (index < 0)
 	    RETURN_FALSE;
@@ -229,7 +145,7 @@ PHP_METHOD(UString, toLower) {
 		return;
 	}
     
-    php_ustring_toLower(getThis(), return_value TSRMLS_CC);
+    php_ustring_backend->toLower(getThis(), return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::toUpper(void) */
@@ -238,7 +154,7 @@ PHP_METHOD(UString, toUpper) {
 		return;
 	}
 
-	php_ustring_toUpper(getThis(), return_value TSRMLS_CC);
+	php_ustring_backend->toUpper(getThis(), return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::reverse(void) */
@@ -247,7 +163,7 @@ PHP_METHOD(UString, reverse) {
 		return;
 	}
 
-    php_ustring_reverse(getThis(), return_value TSRMLS_CC);
+    php_ustring_backend->reverse(getThis(), return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::trim(void) */
@@ -256,7 +172,7 @@ PHP_METHOD(UString, trim) {
 		return;
 	}
 
-    php_ustring_trim(getThis(), return_value TSRMLS_CC);
+    php_ustring_backend->trim(getThis(), return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::replace(UString search, UString replace) */
@@ -267,7 +183,7 @@ PHP_METHOD(UString, replace) {
 		return;
 	}
 
-    php_ustring_replace(getThis(), search, replace, return_value TSRMLS_CC);
+    php_ustring_backend->replace(getThis(), search, replace, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::replaceSlice(UString text [, int start [, int length]]) */
@@ -279,7 +195,7 @@ PHP_METHOD(UString, replaceSlice) {
 		return;
 	}
 
-	php_ustring_replaceSlice(getThis(), text, start, length, return_value TSRMLS_CC);
+	php_ustring_backend->replaceSlice(getThis(), text, start, length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::charAt(int index) */
@@ -290,7 +206,7 @@ PHP_METHOD(UString, charAt) {
 		return;
 	}
 
-	php_ustring_charAt(getThis(), index, return_value TSRMLS_CC);
+	php_ustring_backend->charAt(getThis(), index, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::substring(int start [, int length]) */
@@ -302,7 +218,7 @@ PHP_METHOD(UString, substring) {
 		return;
 	}
 	
-	php_ustring_substring(getThis(), start, length, return_value TSRMLS_CC);
+	php_ustring_backend->substring(getThis(), start, length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto bool UString::contains(UString text) */
@@ -313,7 +229,7 @@ PHP_METHOD(UString, contains) {
         return;
     }
     
-    RETURN_BOOL(php_ustring_contains(getThis(), text TSRMLS_CC));
+    RETURN_BOOL(php_ustring_backend->contains(getThis(), text TSRMLS_CC));
 } /* }}} */
 
 /* {{{ proto UString[] UString::chunk(int $length) */
@@ -324,7 +240,7 @@ PHP_METHOD(UString, chunk) {
         return;
     }
     
-    php_ustring_chunk(getThis(), length, return_value TSRMLS_CC);
+    php_ustring_backend->chunk(getThis(), length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::repeat(int count) */
@@ -335,7 +251,7 @@ PHP_METHOD(UString, repeat) {
         return;
     }
     
-    php_ustring_repeat(getThis(), count, return_value TSRMLS_CC);
+    php_ustring_backend->repeat(getThis(), count, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::pad(int length, UString pad = " ", int mode = STR_PAD_RIGHT) */
@@ -352,7 +268,7 @@ PHP_METHOD(UString, pad) {
 		pad = &UG(defaultpad);
 	}
 
-	php_ustring_pad(getThis(), length, pad, mode, return_value TSRMLS_CC);
+	php_ustring_backend->pad(getThis(), length, pad, mode, return_value TSRMLS_CC);
 }
 
 /* {{{ proto array UString::split(UString delimiter, int limit = NULL) */
@@ -364,7 +280,7 @@ PHP_METHOD(UString, split) {
 		return;
 	}
 
-	php_ustring_split(getThis(), delimiter, limit, return_value TSRMLS_CC);
+	php_ustring_backend->split(getThis(), delimiter, limit, return_value TSRMLS_CC);
 }
 
 /* {{{ proto string UString::getCodepage(void) */
@@ -373,7 +289,7 @@ PHP_METHOD(UString, getCodepage) {
 		return;
 	}
 
-	RETURN_STR(php_ustring_getCodepage(getThis() TSRMLS_CC));
+	RETURN_STR(php_ustring_backend->getCodepage(getThis() TSRMLS_CC));
 } /* }}} */
 
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */

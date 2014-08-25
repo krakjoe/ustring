@@ -77,12 +77,17 @@ abstract class UString implements Iterable {
     * @return UString
     **/
     public function repeat(int $count);
-
+    
     /**
     * @return UString
     **/
-    public function pad(int $length [, UString $pad = ' ' [, int mode = STR_PAD_RIGHT ] ]);
-
+    public function pad(int $length [, UString $pad = ' ' [, int $mode = STR_PAD_RIGHT ] ]);
+    
+    /**
+    * @return UString[]
+    **/
+    public function split(UString $delimiter[, int $limit = NULL]);
+    
     /**
     * @return UString
     **/

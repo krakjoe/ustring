@@ -741,15 +741,15 @@ static inline zval* _php_ustring_pad(zval *that, int32_t targetLength, zval *pad
 }
 
 static inline zval* _php_ustring_split(zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(that);
-    UnicodeString text = *ustring->val;
-    UnicodeString delim;
-    int32_t pos, delimLength, count;
-    
-    if (limit < 0) {
-        return NULL;
-    }
-    
+	php_ustring_t *ustring = php_ustring_fetch(that);
+	UnicodeString text = *ustring->val;
+	UnicodeString delim;
+	int32_t pos, delimLength, count;
+	
+	if (limit < 0) {
+		return NULL;
+	}
+	
 	switch (Z_TYPE_P(delimiter)) {
 		case IS_STRING:
 			delim = UnicodeString(Z_STRVAL_P(delimiter), (int32_t)Z_STRSIZE_P(delimiter), UG(codepage)->val);
@@ -762,42 +762,42 @@ static inline zval* _php_ustring_split(zval *that, zval *delimiter, int32_t limi
 		default:
 			return NULL;
 	}
-    delimLength = delim.length();
-    
-    array_init(pieces);
-    
-    count = 0;
-    while ((pos = text.indexOf(delim)) != -1) {
-        zval piece;
-        php_ustring_t *upiece;
-        
-        object_init_ex(&piece, ce_UString);
-        
-        upiece = php_ustring_fetch(&piece);
-        upiece->codepage = STR_COPY(ustring->codepage);
-        upiece->val = new UnicodeString(text, 0, pos);
-        
-        add_next_index_zval(pieces, &piece);
-        
-        text.remove(0, pos + delimLength);
-        
-        if (limit && ++count == limit) {
-            break;
-        }
-    }
-    
-    zval piece;
-    php_ustring_t *upiece;
-    
-    object_init_ex(&piece, ce_UString);
-    
-    upiece = php_ustring_fetch(&piece);
-    upiece->codepage = STR_COPY(ustring->codepage);
-    upiece->val = new UnicodeString(text);
-    
-    add_next_index_zval(pieces, &piece);
+	delimLength = delim.length();
+	
+	array_init(pieces);
+	
+	count = 0;
+	while ((pos = text.indexOf(delim)) != -1) {
+		zval piece;
+		php_ustring_t *upiece;
+		
+		object_init_ex(&piece, ce_UString);
+		
+		upiece = php_ustring_fetch(&piece);
+		upiece->codepage = STR_COPY(ustring->codepage);
+		upiece->val = new UnicodeString(text, 0, pos);
+		
+		add_next_index_zval(pieces, &piece);
+		
+		text.remove(0, pos + delimLength);
+		
+		if (limit && ++count == limit) {
+			break;
+		}
+	}
+	
+	zval piece;
+	php_ustring_t *upiece;
+	
+	object_init_ex(&piece, ce_UString);
+	
+	upiece = php_ustring_fetch(&piece);
+	upiece->codepage = STR_COPY(ustring->codepage);
+	upiece->val = new UnicodeString(text);
+	
+	add_next_index_zval(pieces, &piece);
 
-    return pieces;
+	return pieces;
 }
 
 static inline zend_string* _php_ustring_getCodepage(zval *that TSRMLS_DC) {

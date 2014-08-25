@@ -65,8 +65,8 @@ typedef struct _php_ustring_backend_t {
     php_ustring_contains_f     contains;
     php_ustring_chunk_f        chunk;
     php_ustring_repeat_f       repeat;
-	php_ustring_pad_f          pad;
-	php_ustring_split_f	       split;
+    php_ustring_pad_f          pad;
+    php_ustring_split_f	       split;
     php_ustring_getCodepage_f  getCodepage;
     php_ustring_compare_f      compare;
     php_ustring_initialize_f   initialize;

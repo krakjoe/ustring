@@ -193,14 +193,12 @@ static inline int _php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_D
 		    (char*) Z_STRVAL_P(zwrite),
 		    (int32_t) Z_STRSIZE_P(zwrite),
 		    ustring->codepage->val);
-
-	    Z_STRVAL_P(zwrite)[Z_STRSIZE_P(zwrite)] = 0;
-	    Z_TYPE_INFO_P(zwrite) = IS_STRING_EX;
 	} else {
 	    Z_STR_P(zwrite) = STR_ALLOC(0, 0);
-	    Z_STRVAL_P(zwrite)[Z_STRSIZE_P(zwrite)] = 0;
-	    Z_TYPE_INFO_P(zwrite) = IS_STRING;
 	}
+	
+	Z_STRVAL_P(zwrite)[Z_STRSIZE_P(zwrite)] = 0;
+	Z_TYPE_INFO_P(zwrite) = IS_STRING_EX;
 
 	return SUCCESS;
 }

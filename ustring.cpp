@@ -117,6 +117,10 @@ PHP_USTRING_API zval* php_ustring_pad(zval *that, int32_t target_len, zval *pad,
 	return php_ustring_backend->pad(that, target_len, pad, mode, padded TSRMLS_CC);
 }
 
+PHP_USTRING_API zval* php_ustring_split(zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC) {
+	return php_ustring_backend->split(that, delimiter, limit, pieces TSRMLS_CC);
+}
+
 PHP_USTRING_API zend_string* php_ustring_getCodepage(zval *that TSRMLS_DC) {
     return php_ustring_backend->getCodepage(that TSRMLS_CC);
 }
@@ -351,6 +355,18 @@ PHP_METHOD(UString, pad) {
 	php_ustring_pad(getThis(), length, pad, mode, return_value TSRMLS_CC);
 }
 
+/* {{{ proto array UString::split(UString delimiter, int limit = NULL) */
+PHP_METHOD(UString, split) {
+    zval*      delimiter;
+	zend_int_t limit = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &delimiter, &limit) != SUCCESS) {
+		return;
+	}
+
+	php_ustring_split(getThis(), delimiter, limit, return_value TSRMLS_CC);
+}
+
 /* {{{ proto string UString::getCodepage(void) */
 PHP_METHOD(UString, getCodepage) {
 	if (zend_parse_parameters_none() != SUCCESS) {
@@ -432,6 +448,11 @@ ZEND_BEGIN_ARG_INFO_EX(php_ustring_pad_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, pad)
 	ZEND_ARG_INFO(0, mode)
 ZEND_END_ARG_INFO()
+                                            
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_split_arginfo, 0, 0, 1)
+	ZEND_ARG_INFO(0, delimiter)
+	ZEND_ARG_INFO(0, limit)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_setDefaultCodepage_arginfo, 0, 0, 1)
 	ZEND_ARG_INFO(0, codepage)
@@ -455,6 +476,7 @@ zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, chunk, php_ustring_chunk_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, repeat, php_ustring_repeat_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, pad, php_ustring_pad_arginfo, ZEND_ACC_PUBLIC)
+	PHP_ME(UString, split, php_ustring_split_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, charAt, php_ustring_charAt_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, substring, php_ustring_substring_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, getCodepage, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)

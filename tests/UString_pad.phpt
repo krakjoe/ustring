@@ -21,6 +21,8 @@ print_str($std->pad(11, '=-', STR_PAD_BOTH));
 
 print_str($std->pad(17, $std));
 
+print_str($std->pad(13, '、');
+
 ?>
 --EXPECTF--
 [こんにちは世界]
@@ -30,3 +32,4 @@ print_str($std->pad(17, $std));
 [こんにちは世界=-=-]
 [=-こんにちは世界=-]
 [こんにちは世界こんにちは世界こんに]
+[こんにちは世界、、、、、、]

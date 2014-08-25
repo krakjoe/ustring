@@ -6,7 +6,7 @@ The following Unicode String support for PHP7 ...
 ```php
 <?php
 abstract class UString implements Iterable {
-    public function __construct([string $string [, string $codepage]]);
+    public function __construct([string $string [, string $codepage] ]);
     
     /** 
     * @return int
@@ -66,7 +66,7 @@ abstract class UString implements Iterable {
     /**
     * @return mixed
     **/
-    public function lastIndexOf(UString $needle, [int $offset]);
+    public function lastIndexOf(UString $needle [, int $offset]);
     
     /**
     * @return UString[]
@@ -86,7 +86,7 @@ abstract class UString implements Iterable {
     /**
     * @return UString[]
     **/
-    public function split(UString $delimiter[, int $limit = NULL]);
+    public function split(UString $delimiter [, int $limit = NULL]);
     
     /**
     * @return UString

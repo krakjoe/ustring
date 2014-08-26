@@ -57,6 +57,15 @@ static inline php_ustring_t *php_ustring_copy_ex(php_ustring_t *target, php_ustr
 	return target;
 }
 
+static inline zval *php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length)
+{
+	object_init_ex(target, ce_UString);
+
+	php_ustring_copy_ex(php_ustring_fetch(target), source, offset, length);
+
+	return target;
+}
+
 zend_object_handlers php_ustring_handlers;
 
 static inline void _php_ustring_free(zend_object *zobject TSRMLS_DC) {
@@ -729,14 +738,10 @@ static inline zval* _php_ustring_pad(zval *that, int32_t targetLength, zval *pad
 
 static inline zval* _php_ustring_split(zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC) {
 	php_ustring_t *ustring = php_ustring_fetch(that);
-	UnicodeString text = *ustring->val;
 	UnicodeString delim;
-	int32_t pos, delimLength, count;
-	
-	if (limit < 0) {
-		return NULL;
-	}
-	
+	int32_t pos, start, delimLength, count;
+	zval piece;
+
 	switch (Z_TYPE_P(delimiter)) {
 		case IS_STRING:
 			delim = UnicodeString(Z_STRVAL_P(delimiter), (int32_t)Z_STRSIZE_P(delimiter), UG(codepage)->val);
@@ -750,39 +755,41 @@ static inline zval* _php_ustring_split(zval *that, zval *delimiter, int32_t limi
 			return NULL;
 	}
 	delimLength = delim.length();
-	
+
+	if (delimLength == 0 || limit < 0) {
+		return NULL;
+	}
+
 	array_init(pieces);
-	
-	count = 0;
-	while ((pos = text.indexOf(delim)) != -1) {
-		zval piece;
-		php_ustring_t *upiece;
-		
-		object_init_ex(&piece, ce_UString);
-		
-		upiece = php_ustring_fetch(&piece);
-		upiece->codepage = STR_COPY(ustring->codepage);
-		upiece->val = new UnicodeString(text, 0, pos);
-		
-		add_next_index_zval(pieces, &piece);
-		
-		text.remove(0, pos + delimLength);
-		
-		if (limit && ++count == limit) {
-			break;
+
+	if (ustring->val->length() == 0) {
+		if (limit >= 0) {
+			add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, 0, 0));
+		}
+		return pieces;
+	}
+
+	if (limit < 0) {
+		return NULL;
+	} else if (limit <= 1) {
+		add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, 0, ustring->val->length()));
+		return pieces;
+	}
+
+	start = 0; pos = ustring->val->indexOf(delim, 0);
+
+	if (pos == -1) {
+		add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, 0, ustring->val->length()));
+	} else {
+		do {
+			add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, start, pos - start));
+			start = pos + delimLength;
+		} while ((pos = ustring->val->indexOf(delim, start)) != -1 && --limit > 1);
+
+		if (start <= ustring->val->length()) {
+			add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, start, ustring->val->length() - start));
 		}
 	}
-	
-	zval piece;
-	php_ustring_t *upiece;
-	
-	object_init_ex(&piece, ce_UString);
-	
-	upiece = php_ustring_fetch(&piece);
-	upiece->codepage = STR_COPY(ustring->codepage);
-	upiece->val = new UnicodeString(text);
-	
-	add_next_index_zval(pieces, &piece);
 
 	return pieces;
 }

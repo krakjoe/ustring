@@ -358,7 +358,7 @@ PHP_METHOD(UString, pad) {
 /* {{{ proto array UString::split(UString delimiter, int limit = NULL) */
 PHP_METHOD(UString, split) {
     zval*      delimiter;
-	zend_int_t limit = 0;
+	zend_int_t limit = INT_MAX;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &delimiter, &limit) != SUCCESS) {
 		return;

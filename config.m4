@@ -10,5 +10,5 @@ if test "$PHP_USTRING" != "no"; then
 
   PHP_REQUIRE_CXX()
 
-  PHP_NEW_EXTENSION(ustring, ustring.cpp, $ext_shared)
+  PHP_NEW_EXTENSION(ustring, ustring.cpp, $ext_shared,, -D__STDC_LIMIT_MACROS)
 fi

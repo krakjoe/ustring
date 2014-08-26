@@ -45,11 +45,11 @@ ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
 PHP_USTRING_API php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
 
-PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, zend_size_t vlen, const char *codepage, zend_size_t clen TSRMLS_DC) {
+PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, size_t vlen, const char *codepage, size_t clen TSRMLS_DC) {
     php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);
 }
 
-PHP_USTRING_API zend_size_t php_ustring_length(zval *that TSRMLS_DC) {
+PHP_USTRING_API size_t php_ustring_length(zval *that TSRMLS_DC) {
     return php_ustring_backend->length(that TSRMLS_CC);
 }
 
@@ -61,11 +61,11 @@ PHP_USTRING_API bool php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC) {
     return php_ustring_backend->endsWith(that, needle TSRMLS_CC);
 }
 
-PHP_USTRING_API zend_int_t php_ustring_indexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC) {
+PHP_USTRING_API zend_long php_ustring_indexOf(zval *that, zval *needle, zend_long offset TSRMLS_DC) {
     return php_ustring_backend->indexOf(that, needle, offset TSRMLS_CC);
 }
 
-PHP_USTRING_API zend_int_t php_ustring_lastIndexOf(zval *that, zval *needle, zend_int_t offset TSRMLS_DC) {
+PHP_USTRING_API zend_long php_ustring_lastIndexOf(zval *that, zval *needle, zend_long offset TSRMLS_DC) {
     return php_ustring_backend->lastIndexOf(that, needle, offset TSRMLS_CC);
 }
 
@@ -89,15 +89,15 @@ PHP_USTRING_API zval* php_ustring_replace(zval *that, zval *search, zval *replac
     return php_ustring_backend->replace(that, search, replace, replaced TSRMLS_CC);
 }
 
-PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, zend_int_t offset, zend_int_t length, zval *replaced TSRMLS_DC) {
+PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, zend_long offset, zend_long length, zval *replaced TSRMLS_DC) {
     return php_ustring_backend->replaceSlice(that, slice, offset, length, replaced TSRMLS_CC);
 }
 
-PHP_USTRING_API zval* php_ustring_charAt(zval *that, zend_int_t offset, zval *found TSRMLS_DC) {
+PHP_USTRING_API zval* php_ustring_charAt(zval *that, zend_long offset, zval *found TSRMLS_DC) {
     return php_ustring_backend->charAt(that, offset, found TSRMLS_CC);
 }
 
-PHP_USTRING_API zval* php_ustring_substring(zval *that, zend_int_t offset, zend_int_t length, zval *sub TSRMLS_DC) {
+PHP_USTRING_API zval* php_ustring_substring(zval *that, zend_long offset, zend_long length, zval *sub TSRMLS_DC) {
     return php_ustring_backend->substring(that, offset, length, sub TSRMLS_CC);
 }
 
@@ -105,11 +105,11 @@ PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC) {
     return php_ustring_backend->contains(that, text TSRMLS_CC);
 }
 
-PHP_USTRING_API zval* php_ustring_chunk(zval *that, zend_int_t length, zval *chunks TSRMLS_DC) {
+PHP_USTRING_API zval* php_ustring_chunk(zval *that, zend_long length, zval *chunks TSRMLS_DC) {
     return php_ustring_backend->chunk(that, length, chunks TSRMLS_CC);
 }
 
-PHP_USTRING_API zval* php_ustring_repeat(zval *that, zend_int_t count, zval *repeated TSRMLS_DC) {
+PHP_USTRING_API zval* php_ustring_repeat(zval *that, zend_long count, zval *repeated TSRMLS_DC) {
     return php_ustring_backend->repeat(that, count, repeated TSRMLS_CC);
 }
 
@@ -129,11 +129,11 @@ PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 	return php_ustring_backend->compare(op1, op2 TSRMLS_CC);
 }
 
-PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, zend_int_t len TSRMLS_DC) {
-    STR_RELEASE(UG(codepage));
+PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, zend_long len TSRMLS_DC) {
+    zend_string_release(UG(codepage));
 
 	UG(codepage) = 
-	    STR_INIT(value, len, 0);
+	    zend_string_init(value, len, 0);
 }
 
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D) {
@@ -145,7 +145,7 @@ PHP_METHOD(UString, __construct)
 {
 	char *value = NULL, 
 	     *codepage = NULL;
-	zend_size_t    vlen = 0, 
+	int    vlen = 0, 
 	               clen = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &value, &vlen, &codepage, &clen) != SUCCESS) {
@@ -162,7 +162,7 @@ PHP_METHOD(UString, length) {
 		return;
 	}
 
-	RETURN_INT(php_ustring_length(getThis() TSRMLS_CC));
+	RETURN_LONG(php_ustring_length(getThis() TSRMLS_CC));
 } /* }}} */
 
 /* {{{ proto bool UString::startsWith(UString needle) */
@@ -190,8 +190,8 @@ PHP_METHOD(UString, endsWith) {
 /* {{{ proto mixed UString::indexOf(UString needle [, int $offset]) */
 PHP_METHOD(UString, indexOf) {
 	zval *needle;
-    zend_int_t offset = 0;
-    zend_int_t index = -1;
+    zend_long offset = 0;
+    zend_long index = -1;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &needle, &offset) != SUCCESS) {
 		return;
@@ -202,14 +202,14 @@ PHP_METHOD(UString, indexOf) {
 	if (index < 0)
 	    RETURN_FALSE;
 	    
-	RETURN_INT(index + offset);
+	RETURN_LONG(index + offset);
 } /* }}} */
 
 /* {{{ proto mixed UString::lastIndexOf(UString needle [, int $offset]) */
 PHP_METHOD(UString, lastIndexOf) {
 	zval *needle;
-    zend_int_t offset = 0;
-    zend_int_t index = -1;
+    zend_long offset = 0;
+    zend_long index = -1;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &needle, &offset) != SUCCESS) {
 		return;
@@ -220,7 +220,7 @@ PHP_METHOD(UString, lastIndexOf) {
 	if (index < 0)
 	    RETURN_FALSE;
 	    
-	RETURN_INT(index + offset);
+	RETURN_LONG(index + offset);
 } /* }}} */
 
 /* {{{ proto UString UString::toLower(void) */
@@ -273,7 +273,7 @@ PHP_METHOD(UString, replace) {
 /* {{{ proto UString UString::replaceSlice(UString text [, int start [, int length]]) */
 PHP_METHOD(UString, replaceSlice) {
     zval *text;
-    zend_int_t start, length;
+    zend_long start, length;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &text, &start, &length) != SUCCESS) {
 		return;
@@ -284,7 +284,7 @@ PHP_METHOD(UString, replaceSlice) {
 
 /* {{{ proto UString UString::charAt(int index) */
 PHP_METHOD(UString, charAt) {
-	zend_int_t index;
+	zend_long index;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &index) != SUCCESS) {
 		return;
@@ -295,7 +295,7 @@ PHP_METHOD(UString, charAt) {
 
 /* {{{ proto UString UString::substring(int start [, int length]) */
 PHP_METHOD(UString, substring) {
-	zend_int_t start = -1,
+	zend_long start = -1,
 	           length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &start, &length) != SUCCESS) {
@@ -318,7 +318,7 @@ PHP_METHOD(UString, contains) {
 
 /* {{{ proto UString[] UString::chunk(int $length) */
 PHP_METHOD(UString, chunk) {
-    zend_int_t length = 0;
+    zend_long length = 0;
     
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
         return;
@@ -329,7 +329,7 @@ PHP_METHOD(UString, chunk) {
 
 /* {{{ proto UString UString::repeat(int count) */
 PHP_METHOD(UString, repeat) {
-    zend_int_t count = 0;
+    zend_long count = 0;
     
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &count) != SUCCESS) {
         return;
@@ -340,9 +340,9 @@ PHP_METHOD(UString, repeat) {
 
 /* {{{ proto UString UString::pad(int length, UString pad = " ", int mode = STR_PAD_RIGHT) */
 PHP_METHOD(UString, pad) {
-	zend_int_t length;
+	zend_long length;
 	zval*      pad = NULL;
-	zend_int_t mode = STR_PAD_RIGHT;
+	zend_long mode = STR_PAD_RIGHT;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|zl", &length, &pad, &mode) != SUCCESS) {
 		return;
@@ -358,7 +358,7 @@ PHP_METHOD(UString, pad) {
 /* {{{ proto array UString::split(UString delimiter, int limit = NULL) */
 PHP_METHOD(UString, split) {
     zval*      delimiter;
-	zend_int_t limit = INT_MAX;
+	zend_long limit = INT_MAX;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &delimiter, &limit) != SUCCESS) {
 		return;
@@ -379,13 +379,13 @@ PHP_METHOD(UString, getCodepage) {
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
 PHP_METHOD(UString, setDefaultCodepage) {
 	char *codepage = NULL;
-	zend_size_t  clen = 0;
+	int  clen = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &codepage, &clen) != SUCCESS) {
 		return;
 	}
 
-	php_ustring_setDefaultCodepage(codepage, (zend_int_t)clen TSRMLS_CC);
+	php_ustring_setDefaultCodepage(codepage, (zend_long)clen TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto string UString::getDefaultCodepage(void) */
@@ -395,7 +395,7 @@ PHP_METHOD(UString, getDefaultCodepage) {
 		return;
 	}
 
-    RETURN_STR(STR_COPY(php_ustring_getDefaultCodepage(TSRMLS_C)));
+    RETURN_STR(zend_string_copy(php_ustring_getDefaultCodepage(TSRMLS_C)));
 } /* }}} */
 
 /* {{{ */
@@ -512,8 +512,8 @@ PHP_MINIT_FUNCTION(ustring)
  */
 PHP_RINIT_FUNCTION(ustring)
 {
-	UG(codepage) = STR_INIT("UTF-8", sizeof("UTF-8")-1, 0);
-	ZVAL_NEW_STR(&UG(defaultpad), STR_INIT(" ", 1, 0));
+	UG(codepage) = zend_string_init("UTF-8", sizeof("UTF-8")-1, 0);
+	ZVAL_NEW_STR(&UG(defaultpad), zend_string_init(" ", 1, 0));
 
 	return SUCCESS;
 }
@@ -523,7 +523,7 @@ PHP_RINIT_FUNCTION(ustring)
  */
 PHP_RSHUTDOWN_FUNCTION(ustring)
 {
-	STR_RELEASE(UG(codepage));
+	zend_string_release(UG(codepage));
 	zval_dtor(&UG(defaultpad));
 
 	return SUCCESS;

@@ -681,21 +681,21 @@ static inline zend_string* _php_ustring_getCodepage(zval *that TSRMLS_DC) {
 static inline HashTable* _php_ustring_debug(zval *that, int *is_temp TSRMLS_DC) {
     php_ustring_t *ustring = php_ustring_fetch(that);
     HashTable *info = NULL;
-    int32_t length = ustring->val->length(), position = 0;
-    
+    int32_t length = ustring->val->length(), 
+            position = 0;
+
     if (length) {
         ALLOC_HASHTABLE(info);
         zend_hash_init
             (info, length, NULL, ZVAL_PTR_DTOR, 0);
-        
+
         while (position < length) {
-            zval zchar;
-            
             int32_t wanted = ustring->val->extract
 		        (position, 1, NULL, ustring->codepage->val);
-		    
+		    zval zchar;
+
 		    Z_STR(zchar) = STR_ALLOC(wanted, 0);
-		    
+
 		    ustring->val->extract(
 		        position, 
 		        1, (char*) Z_STRVAL(zchar), wanted, 
@@ -703,17 +703,16 @@ static inline HashTable* _php_ustring_debug(zval *that, int *is_temp TSRMLS_DC) 
 
 		    Z_STRVAL(zchar)[Z_STRSIZE(zchar)] = 0;
 		    Z_TYPE_INFO(zchar) = IS_STRING_EX;
-		    
+
 		    zend_hash_next_index_insert(info, &zchar);
-		    
+
 		    position++;
         }
     }
-    
+
     *is_temp = 1;
-    
-    return info;
-    
+
+    return info;    
 }
 
 static inline void _php_ustring_initialize(zend_class_entry **pce TSRMLS_DC) {

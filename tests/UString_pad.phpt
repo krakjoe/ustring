@@ -21,7 +21,7 @@ print_str($std->pad(11, '=-', STR_PAD_BOTH));
 
 print_str($std->pad(17, $std));
 
-print_str($std->pad(13, '、');
+print_str($std->pad(13, '、'));
 
 ?>
 --EXPECTF--

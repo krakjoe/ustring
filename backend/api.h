@@ -23,22 +23,22 @@
 
 /* {{{ */
 typedef void         (*php_ustring_construct_f)         (zval *that, const char *value, size_t len, const char *codepage, size_t clen TSRMLS_DC);
-typedef size_t  (*php_ustring_length_f)            (zval *that TSRMLS_DC);
+typedef size_t       (*php_ustring_length_f)            (zval *that TSRMLS_DC);
 typedef bool         (*php_ustring_startsWith_f)        (zval *that, zval *needle TSRMLS_DC);
 typedef bool         (*php_ustring_endsWith_f)          (zval *that, zval *needle TSRMLS_DC);
-typedef zend_long   (*php_ustring_indexOf_f)           (zval *that, zval *needle, zend_long offset TSRMLS_DC);
-typedef zend_long   (*php_ustring_lastIndexOf_f)       (zval *that, zval *needle, zend_long offset TSRMLS_DC);
+typedef int32_t      (*php_ustring_indexOf_f)           (zval *that, zval *needle, int32_t offset TSRMLS_DC);
+typedef int32_t      (*php_ustring_lastIndexOf_f)       (zval *that, zval *needle, int32_t offset TSRMLS_DC);
 typedef zval*        (*php_ustring_toLower_f)           (zval *that, zval *lowered TSRMLS_DC);
 typedef zval*        (*php_ustring_toUpper_f)           (zval *that, zval *uppered TSRMLS_DC);
 typedef zval*        (*php_ustring_reverse_f)           (zval *that, zval *reversed TSRMLS_DC);
 typedef zval*        (*php_ustring_trim_f)              (zval *that, zval *trimmed TSRMLS_DC);
 typedef zval*        (*php_ustring_replace_f)           (zval *that, zval *search, zval *replace, zval *replaced TSRMLS_DC);
-typedef zval*        (*php_ustring_replaceSlice_f)      (zval *that, zval *slice, zend_long offset, zend_long length, zval *replaced TSRMLS_DC);
-typedef zval*        (*php_ustring_charAt_f)            (zval *that, zend_long offset, zval *found TSRMLS_DC);
-typedef zval*        (*php_ustring_substring_f)         (zval *that, zend_long offset, zend_long length, zval *substring TSRMLS_DC);
+typedef zval*        (*php_ustring_replaceSlice_f)      (zval *that, zval *slice, int32_t offset, int32_t length, zval *replaced TSRMLS_DC);
+typedef zval*        (*php_ustring_charAt_f)            (zval *that, int32_t offset, zval *found TSRMLS_DC);
+typedef zval*        (*php_ustring_substring_f)         (zval *that, int32_t offset, int32_t length, zval *substring TSRMLS_DC);
 typedef bool         (*php_ustring_contains_f)          (zval *that, zval *text TSRMLS_DC);
-typedef zval*        (*php_ustring_chunk_f)             (zval *that, zend_long length, zval *chunks TSRMLS_DC);
-typedef zval*        (*php_ustring_repeat_f)            (zval *that, zend_long count, zval *repeated TSRMLS_DC);
+typedef zval*        (*php_ustring_chunk_f)             (zval *that, int32_t length, zval *chunks TSRMLS_DC);
+typedef zval*        (*php_ustring_repeat_f)            (zval *that, int32_t count, zval *repeated TSRMLS_DC);
 typedef zval*        (*php_ustring_pad_f)               (zval *that, int32_t target_len, zval *pad, int mode, zval *padded TSRMLS_DC);
 typedef zval*        (*php_ustring_split_f)             (zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC);
 typedef zend_string* (*php_ustring_getCodepage_f)       (zval *that TSRMLS_DC);

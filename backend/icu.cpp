@@ -686,7 +686,7 @@ static inline HashTable* _php_ustring_debug(zval *that, int *is_temp TSRMLS_DC) 
     if (length) {
         ALLOC_HASHTABLE(info);
         zend_hash_init
-            (info, 2, NULL, ZVAL_PTR_DTOR, 0);
+            (info, length, NULL, ZVAL_PTR_DTOR, 0);
         
         while (position < length) {
             zval zchar;

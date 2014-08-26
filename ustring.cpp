@@ -540,12 +540,36 @@ PHP_MINFO_FUNCTION(ustring)
 }
 /* }}} */
 
+/* {{{ proto UString u(string value) */
+PHP_FUNCTION(u) {
+    char *val;
+    zend_size_t len;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &val, &len) != SUCCESS) {
+        return;
+    }
+    
+    object_init_ex(return_value, ce_UString);
+    
+    php_ustring_construct
+        (return_value, val, len, UG(codepage)->val, UG(codepage)->len TSRMLS_CC);
+} /* }}} */
+
+ZEND_BEGIN_ARG_INFO_EX(php_ustring_u_arginfo, 0, 0, 1)
+    ZEND_ARG_INFO(0, string)
+ZEND_END_ARG_INFO()
+
+zend_function_entry php_ustring_functions[] = {
+    PHP_FE(u, php_ustring_u_arginfo)
+    PHP_FE_END
+};
+
 /* {{{ ustring_module_entry
  */
 zend_module_entry ustring_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"ustring",
-	NULL,
+	php_ustring_functions,
 	PHP_MINIT(ustring),
 	NULL,
 	PHP_RINIT(ustring),

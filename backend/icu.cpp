@@ -678,6 +678,44 @@ static inline zend_string* _php_ustring_getCodepage(zval *that TSRMLS_DC) {
     return (php_ustring_fetch(that))->codepage;
 }
 
+static inline HashTable* _php_ustring_debug(zval *that, int *is_temp TSRMLS_DC) {
+    php_ustring_t *ustring = php_ustring_fetch(that);
+    HashTable *info = NULL;
+    int32_t length = ustring->val->length(), position = 0;
+    
+    if (length) {
+        ALLOC_HASHTABLE(info);
+        zend_hash_init
+            (info, 2, NULL, ZVAL_PTR_DTOR, 0);
+        
+        while (position < length) {
+            zval zchar;
+            
+            int32_t wanted = ustring->val->extract
+		        (position, 1, NULL, ustring->codepage->val);
+		    
+		    Z_STR(zchar) = STR_ALLOC(wanted, 0);
+		    
+		    ustring->val->extract(
+		        position, 
+		        1, (char*) Z_STRVAL(zchar), wanted, 
+		        ustring->codepage->val);
+
+		    Z_STRVAL(zchar)[Z_STRSIZE(zchar)] = 0;
+		    Z_TYPE_INFO(zchar) = IS_STRING_EX;
+		    
+		    zend_hash_next_index_insert(info, &zchar);
+		    
+		    position++;
+        }
+    }
+    
+    *is_temp = 1;
+    
+    return info;
+    
+}
+
 static inline void _php_ustring_initialize(zend_class_entry **pce TSRMLS_DC) {
     (*pce)->create_object = _php_ustring_create;
 	(*pce)->get_iterator =  _php_ustring_iterator;
@@ -692,6 +730,7 @@ static inline void _php_ustring_initialize(zend_class_entry **pce TSRMLS_DC) {
 	php_ustring_handlers.cast_object = _php_ustring_cast;
 	php_ustring_handlers.read_dimension = _php_ustring_read;
 	php_ustring_handlers.compare_objects = _php_ustring_compare;
+	php_ustring_handlers.get_debug_info = _php_ustring_debug;
 	php_ustring_handlers.offset   = XtOffsetOf(php_ustring_t, std);
 }
 
@@ -717,6 +756,7 @@ php_ustring_backend_t php_ustring_defaults = {
     _php_ustring_split,
     _php_ustring_getCodepage,
     _php_ustring_compare,
+    _php_ustring_debug,
     _php_ustring_initialize,
 };
 

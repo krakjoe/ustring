@@ -43,6 +43,7 @@ typedef zval*        (*php_ustring_pad_f)               (zval *that, int32_t tar
 typedef zval*        (*php_ustring_split_f)             (zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC);
 typedef zend_string* (*php_ustring_getCodepage_f)       (zval *that TSRMLS_DC);
 typedef int          (*php_ustring_compare_f)           (zval *op1, zval *op2 TSRMLS_DC);
+typedef HashTable*   (*php_ustring_debug_f)             (zval *that, int *is_temp TSRMLS_DC);
 typedef void         (*php_ustring_initialize_f)        (zend_class_entry **ce TSRMLS_DC);
 /* }}} */
 
@@ -69,6 +70,7 @@ typedef struct _php_ustring_backend_t {
     php_ustring_split_f	       split;
     php_ustring_getCodepage_f  getCodepage;
     php_ustring_compare_f      compare;
+    php_ustring_debug_f        debug;
     php_ustring_initialize_f   initialize;
 } php_ustring_backend_t; /* }}} */
 

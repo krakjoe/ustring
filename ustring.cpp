@@ -190,36 +190,38 @@ PHP_METHOD(UString, endsWith) {
 /* {{{ proto mixed UString::indexOf(UString needle [, int $offset]) */
 PHP_METHOD(UString, indexOf) {
 	zval *needle;
-    int32_t offset = 0;
+    zend_long offset = 0;
     int32_t index = -1;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &needle, &offset) != SUCCESS) {
 		return;
 	}
 	
-	index = php_ustring_indexOf(getThis(), needle, offset TSRMLS_CC);
+	index = php_ustring_indexOf(getThis(), needle, (int32_t)offset TSRMLS_CC);
 	
-	if (index < 0)
+	if (index < 0) {
 	    RETURN_FALSE;
-	    
+	}
+
 	RETURN_LONG(index + offset);
 } /* }}} */
 
 /* {{{ proto mixed UString::lastIndexOf(UString needle [, int $offset]) */
 PHP_METHOD(UString, lastIndexOf) {
 	zval *needle;
-    int32_t offset = 0;
+    zend_long offset = 0;
     int32_t index = -1;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &needle, &offset) != SUCCESS) {
 		return;
 	}
 
-	index = php_ustring_lastIndexOf(getThis(), needle, offset TSRMLS_CC);
+	index = php_ustring_lastIndexOf(getThis(), needle, (int32_t)offset TSRMLS_CC);
 
-	if (index < 0)
-	    RETURN_FALSE;
-	    
+	if (index < 0) {
+		RETURN_FALSE;
+	}
+
 	RETURN_LONG(index + offset);
 } /* }}} */
 
@@ -273,36 +275,35 @@ PHP_METHOD(UString, replace) {
 /* {{{ proto UString UString::replaceSlice(UString text [, int start [, int length]]) */
 PHP_METHOD(UString, replaceSlice) {
     zval *text;
-    int32_t start, length;
+    zend_long start, length;
     
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ll", &text, &start, &length) != SUCCESS) {
 		return;
 	}
 
-	php_ustring_replaceSlice(getThis(), text, start, length, return_value TSRMLS_CC);
+	php_ustring_replaceSlice(getThis(), text, (int32_t)start, (int32_t)length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::charAt(int index) */
 PHP_METHOD(UString, charAt) {
-	int32_t index;
+	zend_long index;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &index) != SUCCESS) {
 		return;
 	}
 
-	php_ustring_charAt(getThis(), index, return_value TSRMLS_CC);
+	php_ustring_charAt(getThis(), (int32_t)index, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::substring(int start [, int length]) */
 PHP_METHOD(UString, substring) {
-	int32_t start = -1,
-	           length = -1;
+	zend_long start = -1, length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &start, &length) != SUCCESS) {
 		return;
 	}
-	
-	php_ustring_substring(getThis(), start, length, return_value TSRMLS_CC);
+
+	php_ustring_substring(getThis(), (int32_t)start, (int32_t)length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto bool UString::contains(UString text) */
@@ -318,7 +319,7 @@ PHP_METHOD(UString, contains) {
 
 /* {{{ proto UString[] UString::chunk(int $length) */
 PHP_METHOD(UString, chunk) {
-    int32_t length = 0;
+    zend_long length = 0;
     
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &length) != SUCCESS) {
         return;
@@ -329,20 +330,20 @@ PHP_METHOD(UString, chunk) {
 
 /* {{{ proto UString UString::repeat(int count) */
 PHP_METHOD(UString, repeat) {
-    int32_t count = 0;
+    zend_long count = 0;
     
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &count) != SUCCESS) {
         return;
     }
     
-    php_ustring_repeat(getThis(), count, return_value TSRMLS_CC);
+    php_ustring_repeat(getThis(), (int32_t)count, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::pad(int length, UString pad = " ", int mode = STR_PAD_RIGHT) */
 PHP_METHOD(UString, pad) {
-	int32_t length;
+	zend_long length;
 	zval*      pad = NULL;
-	int32_t mode = STR_PAD_RIGHT;
+	zend_long mode = STR_PAD_RIGHT;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|zl", &length, &pad, &mode) != SUCCESS) {
 		return;
@@ -352,19 +353,19 @@ PHP_METHOD(UString, pad) {
 		pad = &UG(defaultpad);
 	}
 
-	php_ustring_pad(getThis(), length, pad, mode, return_value TSRMLS_CC);
+	php_ustring_pad(getThis(), (int32_t)length, pad, (int32_t)mode, return_value TSRMLS_CC);
 }
 
 /* {{{ proto array UString::split(UString delimiter, int limit = NULL) */
 PHP_METHOD(UString, split) {
     zval*      delimiter;
-	int32_t limit = INT_MAX;
+	zend_long limit = INT_MAX;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|l", &delimiter, &limit) != SUCCESS) {
 		return;
 	}
 
-	php_ustring_split(getThis(), delimiter, limit, return_value TSRMLS_CC);
+	php_ustring_split(getThis(), delimiter, (int32_t)limit, return_value TSRMLS_CC);
 }
 
 /* {{{ proto string UString::getCodepage(void) */

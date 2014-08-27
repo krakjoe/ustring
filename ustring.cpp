@@ -45,11 +45,11 @@ ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
 PHP_USTRING_API php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
 
-PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, size_t vlen, const char *codepage, size_t clen TSRMLS_DC) {
+PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
     php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);
 }
 
-PHP_USTRING_API size_t php_ustring_length(zval *that TSRMLS_DC) {
+PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC) {
     return php_ustring_backend->length(that TSRMLS_CC);
 }
 

@@ -298,7 +298,7 @@ static inline int _php_ustring_operate(zend_uchar opcode, zval *result, zval *op
 	return FAILURE;
 }
 
-static inline void _php_ustring_construct(zval *that, const char *value, size_t vlen, const char *codepage, size_t clen TSRMLS_DC) {
+static inline void _php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
     php_ustring_t* ustring;
     
     if (Z_TYPE_P(that) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(that), ce_UString TSRMLS_CC)) {
@@ -316,7 +316,7 @@ static inline void _php_ustring_construct(zval *that, const char *value, size_t 
     ustring->val = new UnicodeString(value, vlen, ustring->codepage->val);
 }
 
-static inline size_t _php_ustring_length(zval *that TSRMLS_DC) {
+static inline int32_t _php_ustring_length(zval *that TSRMLS_DC) {
     return (php_ustring_fetch(that))->val->length();
 }
 

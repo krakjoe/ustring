@@ -10,3 +10,4 @@ make test TESTS=ext/ustring
 make distclean
 ./configure --disable-all --enable-ustring --enable-icu
 make test TESTS=ext/ustring
+echo "All good things ..."

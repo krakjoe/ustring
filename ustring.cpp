@@ -47,11 +47,11 @@ ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
 PHP_USTRING_API php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
 
-PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, size_t vlen, const char *codepage, size_t clen TSRMLS_DC) {
+PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
     php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);
 }
 
-PHP_USTRING_API size_t php_ustring_length(zval *that TSRMLS_DC) {
+PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC) {
     return php_ustring_backend->length(that TSRMLS_CC);
 }
 
@@ -134,8 +134,7 @@ PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, int32_t len TSRMLS_DC) {
     zend_string_release(UG(codepage));
 
-	UG(codepage) = 
-	    zend_string_init(value, len, 0);
+	UG(codepage) = zend_string_init(value, len, 0);
 }
 
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D) {
@@ -147,8 +146,7 @@ PHP_METHOD(UString, __construct)
 {
 	char *value = NULL, 
 	     *codepage = NULL;
-	int  vlen = 0, 
-	     clen = 0;
+	int vlen = 0, clen = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &value, &vlen, &codepage, &clen) != SUCCESS) {
 		return;
@@ -199,11 +197,12 @@ PHP_METHOD(UString, indexOf) {
 		return;
 	}
 	
-	index = php_ustring_indexOf(getThis(), needle, offset TSRMLS_CC);
+	index = php_ustring_indexOf(getThis(), needle, (int32_t)offset TSRMLS_CC);
 	
-	if (index < 0)
+	if (index < 0) {
 	    RETURN_FALSE;
-	    
+	}
+
 	RETURN_LONG(index + offset);
 } /* }}} */
 
@@ -217,11 +216,12 @@ PHP_METHOD(UString, lastIndexOf) {
 		return;
 	}
 
-	index = php_ustring_lastIndexOf(getThis(), needle, offset TSRMLS_CC);
+	index = php_ustring_lastIndexOf(getThis(), needle, (int32_t)offset TSRMLS_CC);
 
-	if (index < 0)
-	    RETURN_FALSE;
-	    
+	if (index < 0) {
+		RETURN_FALSE;
+	}
+
 	RETURN_LONG(index + offset);
 } /* }}} */
 
@@ -281,7 +281,7 @@ PHP_METHOD(UString, replaceSlice) {
 		return;
 	}
 
-	php_ustring_replaceSlice(getThis(), text, start, length, return_value TSRMLS_CC);
+	php_ustring_replaceSlice(getThis(), text, (int32_t)start, (int32_t)length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::charAt(int index) */
@@ -292,19 +292,18 @@ PHP_METHOD(UString, charAt) {
 		return;
 	}
 
-	php_ustring_charAt(getThis(), index, return_value TSRMLS_CC);
+	php_ustring_charAt(getThis(), (int32_t)index, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::substring(int start [, int length]) */
 PHP_METHOD(UString, substring) {
-	zend_long start = -1,
-	           length = -1;
+	zend_long start = -1, length = -1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &start, &length) != SUCCESS) {
 		return;
 	}
-	
-	php_ustring_substring(getThis(), start, length, return_value TSRMLS_CC);
+
+	php_ustring_substring(getThis(), (int32_t)start, (int32_t)length, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto bool UString::contains(UString text) */
@@ -337,7 +336,7 @@ PHP_METHOD(UString, repeat) {
         return;
     }
     
-    php_ustring_repeat(getThis(), count, return_value TSRMLS_CC);
+    php_ustring_repeat(getThis(), (int32_t)count, return_value TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto UString UString::pad(int length, UString pad = " ", int mode = STR_PAD_RIGHT) */
@@ -354,7 +353,7 @@ PHP_METHOD(UString, pad) {
 		pad = &UG(defaultpad);
 	}
 
-	php_ustring_pad(getThis(), length, pad, mode, return_value TSRMLS_CC);
+	php_ustring_pad(getThis(), (int32_t)length, pad, (int32_t)mode, return_value TSRMLS_CC);
 }
 
 /* {{{ proto array UString::split(UString delimiter, int limit = NULL) */
@@ -366,7 +365,7 @@ PHP_METHOD(UString, split) {
 		return;
 	}
 
-	php_ustring_split(getThis(), delimiter, limit, return_value TSRMLS_CC);
+	php_ustring_split(getThis(), delimiter, (int32_t)limit, return_value TSRMLS_CC);
 }
 
 /* {{{ proto string UString::getCodepage(void) */
@@ -550,7 +549,7 @@ PHP_MINFO_FUNCTION(ustring)
 /* {{{ proto UString u(string value) */
 PHP_FUNCTION(u) {
     char *val;
-    size_t len;
+    int len;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &val, &len) != SUCCESS) {
         return;

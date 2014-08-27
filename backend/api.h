@@ -22,8 +22,8 @@
 #define PHP_USTRING_BACKEND_API_H
 
 /* {{{ */
-typedef void         (*php_ustring_construct_f)         (zval *that, const char *value, size_t len, const char *codepage, size_t clen TSRMLS_DC);
-typedef size_t       (*php_ustring_length_f)            (zval *that TSRMLS_DC);
+typedef void         (*php_ustring_construct_f)         (zval *that, const char *value, int32_t len, const char *codepage, int32_t clen TSRMLS_DC);
+typedef int32_t      (*php_ustring_length_f)            (zval *that TSRMLS_DC);
 typedef bool         (*php_ustring_startsWith_f)        (zval *that, zval *needle TSRMLS_DC);
 typedef bool         (*php_ustring_endsWith_f)          (zval *that, zval *needle TSRMLS_DC);
 typedef int32_t      (*php_ustring_indexOf_f)           (zval *that, zval *needle, int32_t offset TSRMLS_DC);

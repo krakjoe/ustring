@@ -57,7 +57,10 @@ static inline php_ustring_t *php_ustring_copy_ex(php_ustring_t *target, php_ustr
 	return target;
 }
 
-static inline zval *php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length)
+#define php_ustring_zval_copy_ex(target, source, offset, length) \
+	_php_ustring_zval_copy_ex(target, source, offset, length TSRMLS_CC)
+
+static inline zval *_php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length TSRMLS_DC)
 {
 	TSRMLS_FETCH();
 
@@ -223,23 +226,24 @@ static inline int _php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_D
 	ustring = php_ustring_fetch(zread);
 
 	length = ustring->val->extract
-		(0, ustring->val->length(), NULL, length, ustring->codepage->val);
+		(0, ustring->val->length(), NULL, 0, ustring->codepage->val);
 
 	if (length) {
-	    Z_STR_P(zwrite) = zend_string_alloc(length, 0);
-	    
-	    ustring->val->extract(
-		    0,
-		    ustring->val->length(),
-		    (char*) Z_STRVAL_P(zwrite),
-		    (int32_t) Z_STRLEN_P(zwrite),
-		    ustring->codepage->val);
+		zend_string *output = zend_string_alloc(length, 0);
+
+		ustring->val->extract(
+			0,
+			ustring->val->length(),
+			(char*)output->val,
+			length,
+			ustring->codepage->val);
+
+		output->val[length] = '\0';
+
+		ZVAL_NEW_STR(zwrite, output);
 	} else {
-	    Z_STR_P(zwrite) = zend_string_alloc(0, 0);
+		ZVAL_EMPTY_STRING(zwrite);
 	}
-	
-	Z_STRVAL_P(zwrite)[Z_STRLEN_P(zwrite)] = 0;
-	Z_TYPE_INFO_P(zwrite) = IS_STRING_EX;
 
 	return SUCCESS;
 }
@@ -296,7 +300,7 @@ static inline int _php_ustring_operate(zend_uchar opcode, zval *result, zval *op
 	return FAILURE;
 }
 
-static inline void _php_ustring_construct(zval *that, const char *value, size_t vlen, const char *codepage, size_t clen TSRMLS_DC) {
+static inline void _php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
     php_ustring_t* ustring;
     
     if (Z_TYPE_P(that) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(that), ce_UString TSRMLS_CC)) {
@@ -314,7 +318,7 @@ static inline void _php_ustring_construct(zval *that, const char *value, size_t 
     ustring->val = new UnicodeString(value, vlen, ustring->codepage->val);
 }
 
-static inline size_t _php_ustring_length(zval *that TSRMLS_DC) {
+static inline int32_t _php_ustring_length(zval *that TSRMLS_DC) {
     return (php_ustring_fetch(that))->val->length();
 }
 

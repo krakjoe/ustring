@@ -5,7 +5,9 @@ before_install:
     - sudo apt-get install -y libicu-dev
 
 before_script:
-    - ./travis/ci.sh
+    - ./travis/compile-php.sh
+    - ./travis/compile-ext.sh
 
 script:
-    - ./sapi/cli/php run-tests.php -p `pwd`/sapi/cli/php --show-diff ext/ustring
+    - ./travis/run-tests.sh
+

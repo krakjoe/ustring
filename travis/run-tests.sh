@@ -2,5 +2,5 @@
 
 set -e
 
-cd ~/krakjoe/ustring
+cd $HOME/krakjoe/ustring
 make test

@@ -2,8 +2,8 @@
 
 set -e
 
-cd ~/krakjoe/ustring
-~/php/bin/phpize
+cd $HOME/krakjoe/ustring
+$HOME/bin/phpize
 
-./configure --with-php-config=~/php/bin/php-config --enable-ustring
+./configure --with-php-config=$HOME/bin/php-config --enable-ustring
 make -j2 --quiet

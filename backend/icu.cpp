@@ -57,7 +57,10 @@ static inline php_ustring_t *php_ustring_copy_ex(php_ustring_t *target, php_ustr
 	return target;
 }
 
-static inline zval *php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length)
+#define php_ustring_zval_copy_ex(target, source, offset, length) \
+	_php_ustring_zval_copy_ex(target, source, offset, length TSRMLS_CC)
+
+static inline zval *_php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length TSRMLS_DC)
 {
 	object_init_ex(target, ce_UString);
 
@@ -97,7 +100,7 @@ static inline void _php_ustring_free(zend_object *zobject TSRMLS_DC) {
 	zend_object_std_dtor(&ustring->std TSRMLS_CC);
 
 	if (ustring->codepage) {
-	    zend_string_release(ustring->codepage TSRMLS_CC);
+	    zend_string_release(ustring->codepage);
 	}
 
 	delete ustring->val;
@@ -305,9 +308,9 @@ static inline void _php_ustring_construct(zval *that, const char *value, size_t 
     ustring = php_ustring_fetch(that);
  
     if (!codepage) {
-        ustring->codepage = zend_string_copy(UG(codepage) TSRMLS_CC);
+        ustring->codepage = zend_string_copy(UG(codepage));
     } else {
-		ustring->codepage = zend_string_init(codepage, clen, 0 TSRMLS_CC);
+		ustring->codepage = zend_string_init(codepage, clen, 0);
 	}
     
     ustring->val = new UnicodeString(value, vlen, ustring->codepage->val);
@@ -472,7 +475,7 @@ static inline zval* _php_ustring_charAt(zval *that, int32_t offset, zval *found 
 
 		ostring = php_ustring_fetch(found);
 		ostring->val = new UnicodeString(&c, 1);
-		ostring->codepage = zend_string_copy(ustring->codepage TSRMLS_CC);
+		ostring->codepage = zend_string_copy(ustring->codepage);
 	}
 	
 	return found;
@@ -594,7 +597,7 @@ static inline zval* _php_ustring_pad(zval *that, int32_t targetLength, zval *pad
 	}
 
 	ostring->val = new UnicodeString();
-	ostring->codepage = zend_string_copy(ustring->codepage TSRMLS_CC);
+	ostring->codepage = zend_string_copy(ustring->codepage);
 
 	padLength = targetLength - sourceLength;
 
@@ -695,7 +698,7 @@ static inline HashTable* _php_ustring_debug(zval *that, int *is_temp TSRMLS_DC) 
 		        (position, 1, NULL, ustring->codepage->val);
 		    zval zchar;
 
-		    Z_STR(zchar) = zend_string_alloc(wanted, 0 TSRMLS_CC);
+		    Z_STR(zchar) = zend_string_alloc(wanted, 0);
 
 		    ustring->val->extract(
 		        position, 

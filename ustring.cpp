@@ -37,7 +37,7 @@ extern php_ustring_backend_t php_ustring_defaults;
 
 php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
 
-zend_class_entry *ce_UString;
+PHP_USTRING_API zend_class_entry *ce_UString;
 
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
     php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);

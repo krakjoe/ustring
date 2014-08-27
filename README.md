@@ -113,6 +113,12 @@ abstract class UString implements Iterable {
     **/
     public static function setDefaultCodepage(string $codepage);
 }
+
+/**
+* A convenience shortcut for UString constructor is registered by the extension
+* @return UString
+**/
+function u(string $value);
 ?>
 ```
 

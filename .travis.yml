@@ -1,3 +1,11 @@
 language: c
 
-script: ./travis/ci.sh
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -y libicu-dev
+
+before_script:
+    - ./travis/ci.sh
+
+script:
+    - ./php-src/sapi/cli/php run-tests.php -p `pwd`/sapi/cli/php --show-diff ext/ustring

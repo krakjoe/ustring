@@ -22,7 +22,9 @@
 #include "config.h"
 #endif
 
+#ifdef _WIN32
 #include "unicode/unistr.h"
+#endif
 
 extern "C" {
 #    include "php.h"

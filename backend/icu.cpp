@@ -62,8 +62,6 @@ static inline php_ustring_t *php_ustring_copy_ex(php_ustring_t *target, php_ustr
 
 static inline zval *_php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length TSRMLS_DC)
 {
-	TSRMLS_FETCH();
-
 	object_init_ex(target, ce_UString);
 
 	php_ustring_copy_ex(php_ustring_fetch(target), source, offset, length);

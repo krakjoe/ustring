@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 git clone https://github.com/php/php-src
-cd ext
+cd php-src/ext
 git clone https://github.com/krakjoe/ustring
 cd ../
 ./buildconf --force

@@ -44,7 +44,7 @@ typedef struct _php_ustring_iterator_t {
 static inline php_ustring_t *php_ustring_copy(php_ustring_t *target, php_ustring_t *source)
 {
 	target->val = new UnicodeString(*source->val);
-	target->codepage = zend_string_copy(source->codepage TSRMLS_CC);
+	target->codepage = zend_string_copy(source->codepage);
 
 	return target;
 }
@@ -52,7 +52,7 @@ static inline php_ustring_t *php_ustring_copy(php_ustring_t *target, php_ustring
 static inline php_ustring_t *php_ustring_copy_ex(php_ustring_t *target, php_ustring_t *source, int32_t offset, int32_t length)
 {
 	target->val = new UnicodeString(*source->val, offset, length);
-	target->codepage = zend_string_copy(source->codepage TSRMLS_CC);
+	target->codepage = zend_string_copy(source->codepage);
 
 	return target;
 }
@@ -221,23 +221,24 @@ static inline int _php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_D
 	ustring = php_ustring_fetch(zread);
 
 	length = ustring->val->extract
-		(0, ustring->val->length(), NULL, length, ustring->codepage->val);
+		(0, ustring->val->length(), NULL, 0, ustring->codepage->val);
 
 	if (length) {
-	    Z_STR_P(zwrite) = zend_string_alloc(length, 0 TSRMLS_CC);
-	    
-	    ustring->val->extract(
-		    0,
-		    ustring->val->length(),
-		    (char*) Z_STRVAL_P(zwrite),
-		    (int32_t) Z_STRLEN_P(zwrite),
-		    ustring->codepage->val);
+		zend_string *output = zend_string_alloc(length, 0);
+
+		ustring->val->extract(
+			0,
+			ustring->val->length(),
+			(char*)output->val,
+			length,
+			ustring->codepage->val);
+
+		output->val[length] = '\0';
+
+		ZVAL_NEW_STR(zwrite, output);
 	} else {
-	    Z_STR_P(zwrite) = zend_string_alloc(0, 0 TSRMLS_CC);
+		ZVAL_EMPTY_STRING(zwrite);
 	}
-	
-	Z_STRVAL_P(zwrite)[Z_STRLEN_P(zwrite)] = 0;
-	Z_TYPE_INFO_P(zwrite) = IS_STRING_EX;
 
 	return SUCCESS;
 }

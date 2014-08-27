@@ -8,4 +8,4 @@ before_script:
     - ./travis/ci.sh
 
 script:
-    - ./php-src/sapi/cli/php run-tests.php -p `pwd`/sapi/cli/php --show-diff ext/ustring
+    - ./sapi/cli/php run-tests.php -p `pwd`/sapi/cli/php --show-diff ext/ustring

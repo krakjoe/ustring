@@ -2,5 +2,6 @@
 
 set -e
 
-cd $HOME/krakjoe/ustring
+cd $TRAVIS_BUILD_DIR
+
 make test

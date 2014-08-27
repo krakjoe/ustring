@@ -18,9 +18,20 @@
 #ifndef PHP_USTRING_BACKEND_ICU
 #define PHP_USTRING_BACKEND_ICU
 
-#include "unicode/unistr.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include "backend/api.h"
+extern "C" {
+#    include "php.h"
+#    include "php_ini.h"
+#    include "ext/standard/info.h"
+#    include "php_ustring.h"
+#    include "../api.h"
+#    include "backend/api.h"
+}
+
+#include "unicode/unistr.h"
 
 typedef struct _php_ustring_t {
 	UnicodeString *val;
@@ -36,10 +47,6 @@ typedef struct _php_ustring_iterator_t {
 } php_ustring_iterator_t;
 
 #define php_ustring_fetch(o) ((php_ustring_t*) (((char*)Z_OBJ_P(o)) - XtOffsetOf(php_ustring_t, std)))
-
-#define STR_PAD_LEFT            0
-#define STR_PAD_RIGHT           1
-#define STR_PAD_BOTH            2
 
 static inline php_ustring_t *php_ustring_copy(php_ustring_t *target, php_ustring_t *source)
 {

@@ -22,32 +22,22 @@
 #include "config.h"
 #endif
 
-#ifdef _WIN32
-#include "unicode/unistr.h"
-#endif
-
 extern "C" {
 #    include "php.h"
 #    include "php_ini.h"
 #    include "ext/standard/info.h"
 #    include "php_ustring.h"
 #    include "api.h"
+#    include "backend/api.h"
 }
 
 ZEND_DECLARE_MODULE_GLOBALS(ustring);
 
-#ifdef ZTS
-#define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
-#else
-#define UG(v) (ustring_globals.v)
-#endif
+extern php_ustring_backend_t php_ustring_defaults;
 
-/*
- * Do some magical ifdef'ing maybe ?
- */
-#include "backend/icu.cpp"
+php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
 
-PHP_USTRING_API php_ustring_backend_t *php_ustring_backend = &php_ustring_defaults;
+zend_class_entry *ce_UString;
 
 PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
     php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);

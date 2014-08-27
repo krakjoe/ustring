@@ -61,7 +61,15 @@ PHP_USTRING_API zend_string*   php_ustring_getCodepage(zval *that TSRMLS_DC);
 PHP_USTRING_API void           php_ustring_setDefaultCodepage(const char *value, int32_t len TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getDefaultCodepage(TSRMLS_D);
 
-PHP_USTRING_API zend_class_entry* ce_UString;
+PHP_USTRING_API extern zend_class_entry* ce_UString;
+
+#ifdef ZTS
+#define UG(v) TSRMG(ustring_globals_id, zend_ustring_globals *, v)
+#else
+#define UG(v) (ustring_globals.v)
+#endif
+
+ZEND_EXTERN_MODULE_GLOBALS(ustring);
 /* }}} */
 
 #endif	/* PHP_USTRING_API_H */

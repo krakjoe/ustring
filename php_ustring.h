@@ -37,6 +37,10 @@ ZEND_BEGIN_MODULE_GLOBALS(ustring)
 	zval defaultpad;
 ZEND_END_MODULE_GLOBALS(ustring)
 
+#define STR_PAD_LEFT            0
+#define STR_PAD_RIGHT           1
+#define STR_PAD_BOTH            2
+
 #endif	/* PHP_USTRING_H */
 
 /*

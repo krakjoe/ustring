@@ -145,8 +145,7 @@ PHP_METHOD(UString, __construct)
 {
 	char *value = NULL, 
 	     *codepage = NULL;
-	size_t    vlen = 0, 
-	          clen = 0;
+	int vlen = 0, clen = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &value, &vlen, &codepage, &clen) != SUCCESS) {
 		return;
@@ -380,7 +379,7 @@ PHP_METHOD(UString, getCodepage) {
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
 PHP_METHOD(UString, setDefaultCodepage) {
 	char *codepage = NULL;
-	size_t  clen = 0;
+	int  clen = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &codepage, &clen) != SUCCESS) {
 		return;
@@ -549,7 +548,7 @@ PHP_MINFO_FUNCTION(ustring)
 /* {{{ proto UString u(string value) */
 PHP_FUNCTION(u) {
     char *val;
-    size_t len;
+    int len;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &val, &len) != SUCCESS) {
         return;

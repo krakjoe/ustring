@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include "unicode/unistr.h"
+
 extern "C" {
 #    include "php.h"
 #    include "php_ini.h"
@@ -30,8 +32,6 @@ extern "C" {
 #    include "../api.h"
 #    include "backend/api.h"
 }
-
-#include "unicode/unistr.h"
 
 typedef struct _php_ustring_t {
 	UnicodeString *val;

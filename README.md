@@ -3,9 +3,8 @@
 ustring
 =======
 
-Exposing an interface to [`UnicodeString`](http://icu-project.org/apiref/icu4c/classicu_1_1UnicodeString.html) for upcoming PHP7.
+Provides a simple interface to work with Unicode strings in upcoming PHP7.
 
-The following interface will be available:
 
 ```php
 <?php

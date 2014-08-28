@@ -1,7 +1,11 @@
+[![Build Status](https://travis-ci.org/krakjoe/ustring.svg?branch=master)](https://travis-ci.org/krakjoe/ustring)
+
 ustring
 =======
 
-The following Unicode String support for PHP7 ...
+Exposing an interface to [`UnicodeString`](http://icu-project.org/apiref/icu4c/classicu_1_1UnicodeString.html) for upcoming PHP7.
+
+The following interface will be available:
 
 ```php
 <?php

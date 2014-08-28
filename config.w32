@@ -4,9 +4,12 @@ ARG_WITH("ustring", "whether to enable ustring support, path to ICU", "yes");
 
 if (PHP_USTRING != "no") {
 	if (CHECK_LIB("icuuc.lib", "ustring", PHP_USTRING) &&
-		CHECK_HEADER_ADD_INCLUDE("unicode/utf.h", "CFLAGS_USTRING")) {
+		CHECK_HEADER_ADD_INCLUDE("unicode/utf.h", "CFLAGS_USTRING") &&
+		CHECK_HEADER_ADD_INCLUDE("php_ustring.h", "CFLAGS_USTRING", PHP_USTRING + ";" + configure_module_dirname)
+		) {
 
 		EXTENSION("ustring", "ustring.cpp");
+		ADD_SOURCES(configure_module_dirname + "\\backend", "icu.cpp", "ustring");
 
 		ADD_FLAG("LIBS_USTRING", "icudt.lib icuin.lib icuio.lib icule.lib iculx.lib icutu.lib icuuc.lib");
 		ADD_FLAG("CFLAGS_USTRING", "/EHsc /Zc:wchar_t /D__STDC_LIMIT_MACROS /DZEND_WIN32_FORCE_INLINE");

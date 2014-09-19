@@ -23,7 +23,6 @@
 
 /* {{{ */
 typedef void         (*php_ustring_construct_f)         (zval *that, const char *value, int32_t len, const char *codepage, int32_t clen TSRMLS_DC);
-typedef int32_t      (*php_ustring_length_f)            (zval *that TSRMLS_DC);
 typedef bool         (*php_ustring_startsWith_f)        (zval *that, zval *needle TSRMLS_DC);
 typedef bool         (*php_ustring_endsWith_f)          (zval *that, zval *needle TSRMLS_DC);
 typedef int32_t      (*php_ustring_indexOf_f)           (zval *that, zval *needle, int32_t offset TSRMLS_DC);
@@ -50,7 +49,6 @@ typedef void         (*php_ustring_initialize_f)        (zend_class_entry **ce T
 /* {{{ */
 typedef struct _php_ustring_backend_t {
     php_ustring_construct_f    construct;
-    php_ustring_length_f       length;
     php_ustring_startsWith_f   startsWith;
     php_ustring_startsWith_f   endsWith;
     php_ustring_indexOf_f      indexOf;

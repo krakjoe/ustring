@@ -43,10 +43,6 @@ PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_
     php_ustring_backend->construct(that, value, vlen, codepage, clen TSRMLS_CC);
 }
 
-PHP_USTRING_API int32_t php_ustring_length(zval *that TSRMLS_DC) {
-    return php_ustring_backend->length(that TSRMLS_CC);
-}
-
 PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) {
     return php_ustring_backend->startsWith(that, needle TSRMLS_CC);
 }
@@ -147,15 +143,6 @@ PHP_METHOD(UString, __construct)
 	php_ustring_construct(getThis(), value, vlen, codepage, clen TSRMLS_CC);
 }
 /* }}} */
-
-/* {{{ proto int UString::length(void) */
-PHP_METHOD(UString, length) {
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	RETURN_LONG(php_ustring_length(getThis() TSRMLS_CC));
-} /* }}} */
 
 /* {{{ proto bool UString::startsWith(UString needle) */
 PHP_METHOD(UString, startsWith) {
@@ -457,7 +444,6 @@ ZEND_END_ARG_INFO() /* }}} */
 /* {{{ */
 zend_function_entry php_ustring_methods[] = {
 	PHP_ME(UString, __construct, php_ustring__construct_arginfo, ZEND_ACC_PUBLIC)
-	PHP_ME(UString, length, php_ustring_no_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, startsWith, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, endsWith, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)
 	PHP_ME(UString, indexOf, php_ustring_std_arginfo, ZEND_ACC_PUBLIC)

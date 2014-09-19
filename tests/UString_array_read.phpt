@@ -7,7 +7,7 @@ Test UString read dimension
 $std = "こんにちは世界";
 $string = new UString($std);
 
-for ($i = 0; $i < $string->length(); $i++) {
+for ($i = 0; $i < $string->length; $i++) {
     var_dump(strlen($string[$i]));    
 }
 ?>

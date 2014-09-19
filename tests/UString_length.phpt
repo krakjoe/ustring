@@ -1,5 +1,5 @@
 --TEST--
-Test UString::length
+Test UString::$length
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
 --FILE--
@@ -8,9 +8,12 @@ $std = "こんにちは世界";
 
 $string = new UString($std);
 
-var_dump($string->length());
+var_dump($string->length);
 var_dump(strlen($string));
+$string->length = 3;
 ?>
---EXPECT--
+--EXPECTF--
 int(7)
 int(21)
+
+Fatal error: Writing to UString properties is unsupported in %s on line %d

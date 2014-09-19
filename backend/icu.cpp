@@ -259,7 +259,7 @@ static zval *_php_ustring_read_property(zval *object, zval *member, int type, vo
 		php_error(E_ERROR, "Retrieval of UString properties for modification is unsupported" TSRMLS_CC);
 	}
 	
-	if (Z_TYPE_P(member) == IS_STRING && strcasecmp(Z_STRVAL_P(member), "length") == 0) {
+	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
 		/* only update the length property when trying to read it */
 		zval member, length;
 		ZVAL_STRINGL(&member, "length", 6);
@@ -278,7 +278,7 @@ static void _php_ustring_write_property(zval *object, zval *member, zval *value,
 
 static int _php_ustring_has_property(zval *object, zval *member, int has_set_exists, void **cache_slot TSRMLS_DC) 
 {
-	if (Z_TYPE_P(member) == IS_STRING && strcasecmp(Z_STRVAL_P(member), "length") == 0) {
+	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
 		/* only update the length property when trying to read it */
 		zval member, length;
 		ZVAL_STRINGL(&member, "length", 6);

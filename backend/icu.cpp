@@ -259,13 +259,10 @@ static zval *_php_ustring_read_property(zval *object, zval *member, int type, vo
 		php_error(E_ERROR, "Retrieval of UString properties for modification is unsupported" TSRMLS_CC);
 	}
 	
+	/* length property doesn't actually exist */
 	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
-		/* only update the length property when trying to read it */
-		zval member, length;
-		ZVAL_STRINGL(&member, "length", 6);
-		ZVAL_LONG(&length, php_ustring_fetch(object)->val->length());
-		zend_std_write_property(object, &member, &length, NULL TSRMLS_CC);
-		zval_ptr_dtor(&member);
+		ZVAL_LONG(rv, php_ustring_fetch(object)->val->length());
+		return rv;
 	}
 	
 	return std_object_handlers.read_property(object, member, type, cache_slot, rv TSRMLS_CC);
@@ -279,12 +276,16 @@ static void _php_ustring_write_property(zval *object, zval *member, zval *value,
 static int _php_ustring_has_property(zval *object, zval *member, int has_set_exists, void **cache_slot TSRMLS_DC) 
 {
 	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
-		/* only update the length property when trying to read it */
-		zval member, length;
-		ZVAL_STRINGL(&member, "length", 6);
-		ZVAL_LONG(&length, php_ustring_fetch(object)->val->length());
-		zend_std_write_property(object, &member, &length, NULL TSRMLS_CC);
-		zval_ptr_dtor(&member);
+		switch (has_set_exists) {
+			/* 0 (has) whether property exists and is not NULL */
+			/* 2 (exists) whether property exists */
+			case 0:
+			case 2:
+				return 1;
+			/* 1 (set) whether property exists and is true */
+			case 1:
+				return !!php_ustring_fetch(object)->val->length();
+		}
 	}
 	
 	return std_object_handlers.has_property(object, member, has_set_exists, cache_slot TSRMLS_CC);

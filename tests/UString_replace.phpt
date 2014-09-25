@@ -8,11 +8,11 @@ $std = "こんにちは世界 歓迎";
 
 $string = new UString($std);
 
-var_dump($string->length());
+var_dump($string->length);
 
 $replaced = $string->replace("歓迎", "welcome :)");
 
-var_dump($replaced->length());
+var_dump($replaced->length);
 ?>
 --EXPECT--
 int(10)

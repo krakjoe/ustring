@@ -253,6 +253,58 @@ static inline int _php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_D
 	return SUCCESS;
 }
 
+static zval *_php_ustring_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv TSRMLS_DC) 
+{
+	/* length property doesn't actually exist */
+	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+	        if (type != BP_VAR_IS && type != BP_VAR_R) {
+        	        php_error(E_ERROR, "Retrieval of length property for modification is unsupported" TSRMLS_CC);
+        	}
+		ZVAL_LONG(rv, php_ustring_fetch(object)->val->length());
+		return rv;
+	}
+	
+	return std_object_handlers.read_property(object, member, type, cache_slot, rv TSRMLS_CC);
+}
+
+static void _php_ustring_write_property(zval *object, zval *member, zval *value, void **cache_slot TSRMLS_DC) 
+{
+       /* length property doesn't actually exist */
+       if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+		php_error(E_ERROR, "Writing to length property is unsupported" TSRMLS_CC);
+	}
+	
+	return std_object_handlers.write_property(object, member, value, cache_slot TSRMLS_CC);
+}
+
+static int _php_ustring_has_property(zval *object, zval *member, int has_set_exists, void **cache_slot TSRMLS_DC) 
+{
+	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+		switch (has_set_exists) {
+			/* 0 (has) whether property exists and is not NULL */
+			/* 2 (exists) whether property exists */
+			case 0:
+			case 2:
+				return 1;
+			/* 1 (set) whether property exists and is true */
+			case 1:
+				return !!php_ustring_fetch(object)->val->length();
+		}
+	}
+	
+	return std_object_handlers.has_property(object, member, has_set_exists, cache_slot TSRMLS_CC);
+}
+
+static void _php_ustring_unset_property(zval *object, zval *member, void **cache_slot TSRMLS_DC) 
+{
+       /* length property doesn't actually exist */
+       if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+		php_error(E_ERROR, "length property cannot be unset" TSRMLS_CC);
+	}
+	
+	return std_object_handlers.unset_property(object, member, cache_slot TSRMLS_CC);
+}
+
 static inline int _php_ustring_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2 TSRMLS_DC) {
 	switch (opcode) {
 		case ZEND_CONCAT: {
@@ -321,10 +373,6 @@ static inline void _php_ustring_construct(zval *that, const char *value, int32_t
 	}
     
     ustring->val = new UnicodeString(value, vlen, ustring->codepage->val);
-}
-
-static inline int32_t _php_ustring_length(zval *that TSRMLS_DC) {
-    return (php_ustring_fetch(that))->val->length();
 }
 
 static inline bool _php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) {
@@ -738,6 +786,10 @@ static inline void _php_ustring_initialize(zend_class_entry **pce TSRMLS_DC) {
 	php_ustring_handlers.free_obj = _php_ustring_free;
 	php_ustring_handlers.do_operation = _php_ustring_operate;
 	php_ustring_handlers.cast_object = _php_ustring_cast;
+	php_ustring_handlers.read_property = _php_ustring_read_property;
+	php_ustring_handlers.write_property = _php_ustring_write_property;
+	php_ustring_handlers.has_property = _php_ustring_has_property;
+	php_ustring_handlers.unset_property = _php_ustring_unset_property;
 	php_ustring_handlers.read_dimension = _php_ustring_read;
 	php_ustring_handlers.compare_objects = _php_ustring_compare;
 	php_ustring_handlers.get_debug_info = _php_ustring_debug;
@@ -746,7 +798,6 @@ static inline void _php_ustring_initialize(zend_class_entry **pce TSRMLS_DC) {
 
 php_ustring_backend_t php_ustring_defaults = {
     _php_ustring_construct,
-    _php_ustring_length,
     _php_ustring_startsWith,
     _php_ustring_endsWith,
     _php_ustring_indexOf,

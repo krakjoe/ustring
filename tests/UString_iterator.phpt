@@ -8,7 +8,7 @@ $std = "こんにちは世界";
 $string = new UString($std);
 
 foreach ($string as $character) {
-    var_dump($character->length());
+    var_dump($character->length);
 }
 
 ?>

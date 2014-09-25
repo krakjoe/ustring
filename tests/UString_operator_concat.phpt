@@ -8,11 +8,11 @@ $std = "こんにちは世界";
 
 $string = new UString($std);
 
-var_dump($string->length());
+var_dump($string->length);
 
 $result = $string .= ", whatever";
 
-var_dump($result->length());
+var_dump($result->length);
 ?>
 --EXPECT--
 int(7)

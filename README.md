@@ -8,6 +8,9 @@ Provides a simple interface to work with Unicode strings in upcoming PHP7.
 
 ```php
 <?php
+/** 
+* @property int $length The number of unicode code points (read-only)
+**/
 abstract class UString implements Iterable {
     /**
     * Shall create a UString with the given value and codepage.
@@ -17,12 +20,6 @@ abstract class UString implements Iterable {
     * @see UString::getDefaultCodepage
     **/
     public function __construct([string $string [, string $codepage] ]);
-    
-    /** 
-    * Shall return the number of unicode code points
-    * @return int
-    **/
-    public function length();
     
     /** 
     * Shall return a new UString whose characters are converted to upper case

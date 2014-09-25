@@ -477,14 +477,19 @@ static inline void php_ustring_globals_ctor(zend_ustring_globals  *ug TSRMLS_DC)
 PHP_MINIT_FUNCTION(ustring)
 {
 	zend_class_entry ce;
+	zval tmp;
 
 	INIT_CLASS_ENTRY(ce, "UString", php_ustring_methods);
 
 	ZEND_INIT_MODULE_GLOBALS(ustring, php_ustring_globals_ctor, NULL);
 
 	ce_UString = zend_register_internal_class(&ce TSRMLS_CC);
-    
-    php_ustring_backend->initialize(&ce_UString TSRMLS_CC);
+	
+	/* This property is given a NULL value and declared so it'll reflect properly, but we don't actually implement it as a real property, and we instead use getters and setters */
+	ZVAL_NULL(&tmp);
+	zend_declare_property(ce_UString, "length", 6, &tmp, ZEND_ACC_PUBLIC TSRMLS_CC);
+	
+	php_ustring_backend->initialize(&ce_UString TSRMLS_CC);
 	
 	return SUCCESS;
 }

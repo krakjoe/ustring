@@ -23,6 +23,9 @@ var_dump(isset($empty->length));
 var_dump(empty($empty->length));
 var_dump(property_exists($empty, 'length'));
 
+echo PHP_EOL;
+var_dump(new ReflectionProperty("UString", "length"));
+
 $string->length = 3;
 ?>
 --EXPECTF--
@@ -37,4 +40,11 @@ bool(true)
 bool(true)
 bool(true)
 
-Fatal error: Writing to UString properties is unsupported in %s on line %d
+object(ReflectionProperty)#%d (2) {
+  ["name"]=>
+  string(6) "length"
+  ["class"]=>
+  string(7) "UString"
+}
+
+Fatal error: Writing to length property is unsupported in %s on line %d

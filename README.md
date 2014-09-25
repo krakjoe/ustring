@@ -100,16 +100,19 @@ abstract class UString implements Iterable {
     public function repeat(int $count);
     
     /**
+	* Shall return a new UString padded to a given length with the pad character
     * @return UString
     **/
     public function pad(int $length [, UString $pad = ' ' [, int $mode = STR_PAD_RIGHT ] ]);
     
     /**
+	* Shall split a UString by the delimeter up to the limit, if specified, returning an array of UStrings
     * @return UString[]
     **/
     public function split(UString $delimiter [, int $limit = NULL]);
     
     /**
+	* Shall return a new UString containing the single code point at the given index
     * @return UString
     **/
     public function charAt(int $index);

@@ -255,12 +255,11 @@ static inline int _php_ustring_cast(zval *zread, zval *zwrite, int type TSRMLS_D
 
 static zval *_php_ustring_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv TSRMLS_DC) 
 {
-	if (type != BP_VAR_IS && type != BP_VAR_R) {
-		php_error(E_ERROR, "Retrieval of UString properties for modification is unsupported" TSRMLS_CC);
-	}
-	
 	/* length property doesn't actually exist */
 	if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+	        if (type != BP_VAR_IS && type != BP_VAR_R) {
+        	        php_error(E_ERROR, "Retrieval of length property for modification is unsupported" TSRMLS_CC);
+        	}
 		ZVAL_LONG(rv, php_ustring_fetch(object)->val->length());
 		return rv;
 	}
@@ -270,7 +269,12 @@ static zval *_php_ustring_read_property(zval *object, zval *member, int type, vo
 
 static void _php_ustring_write_property(zval *object, zval *member, zval *value, void **cache_slot TSRMLS_DC) 
 {
-	php_error(E_ERROR, "Writing to UString properties is unsupported" TSRMLS_CC);
+       /* length property doesn't actually exist */
+       if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+		php_error(E_ERROR, "Writing to length property is unsupported" TSRMLS_CC);
+	}
+	
+	return std_object_handlers.write_property(object, member, value, cache_slot TSRMLS_CC);
 }
 
 static int _php_ustring_has_property(zval *object, zval *member, int has_set_exists, void **cache_slot TSRMLS_DC) 
@@ -293,7 +297,12 @@ static int _php_ustring_has_property(zval *object, zval *member, int has_set_exi
 
 static void _php_ustring_unset_property(zval *object, zval *member, void **cache_slot TSRMLS_DC) 
 {
-	php_error(E_ERROR, "UString properties cannot be unset" TSRMLS_CC);
+       /* length property doesn't actually exist */
+       if (Z_TYPE_P(member) == IS_STRING && strcmp(Z_STRVAL_P(member), "length") == 0) {
+		php_error(E_ERROR, "length property cannot be unset" TSRMLS_CC);
+	}
+	
+	return std_object_handlers.unset_property(object, member, cache_slot TSRMLS_CC);
 }
 
 static inline int _php_ustring_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2 TSRMLS_DC) {

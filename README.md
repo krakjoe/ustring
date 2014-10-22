@@ -11,7 +11,7 @@ Provides a simple interface to work with Unicode strings in upcoming PHP7.
 /** 
 * @property int $length The number of unicode code points (read-only)
 **/
-abstract class UString implements Iterable {
+class UString implements Traversable {
     /**
     * Shall create a UString with the given value and codepage.
     * If no codepage is provided, the default codepage will be used.

@@ -9,7 +9,6 @@ if (PHP_USTRING != "no") {
 		) {
 
 		EXTENSION("ustring", "ustring.cpp");
-		ADD_SOURCES(configure_module_dirname + "\\backend", "icu.cpp", "ustring");
 
 		ADD_FLAG("LIBS_USTRING", "icudt.lib icuin.lib icuio.lib icule.lib iculx.lib icutu.lib icuuc.lib");
 		ADD_FLAG("CFLAGS_USTRING", "/EHsc /Zc:wchar_t /D__STDC_LIMIT_MACROS /DZEND_WIN32_FORCE_INLINE");

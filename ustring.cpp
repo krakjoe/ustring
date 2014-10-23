@@ -1217,6 +1217,7 @@ PHP_FUNCTION(u) {
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_u_arginfo, 0, 0, 1)
     ZEND_ARG_INFO(0, string)
+    ZEND_ARG_INFO(0, codepage)
 ZEND_END_ARG_INFO()
 
 zend_function_entry php_ustring_functions[] = {

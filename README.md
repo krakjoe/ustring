@@ -147,7 +147,7 @@ class UString implements Traversable {
 * A convenience shortcut for UString constructor is registered by the extension
 * @return UString
 **/
-function u(string $value);
+function u(string $value [, string $codepage]);
 ?>
 ```
 

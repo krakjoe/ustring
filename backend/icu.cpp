@@ -592,7 +592,7 @@ static inline zval* _php_ustring_chunk(zval *that, int32_t length, zval *chunks 
 }
 
 static inline zval* _php_ustring_repeat(zval *that, int32_t count, zval *repeated TSRMLS_DC) {
-    php_ustring_t *ustring = php_ustring_fetch(getThis()), 
+    php_ustring_t *ustring = php_ustring_fetch(that), 
                   *urepeat;
     int32_t current = 0;
     

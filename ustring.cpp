@@ -71,7 +71,7 @@ static inline php_ustring_t *php_ustring_copy_ex(php_ustring_t *target, php_ustr
 	return target;
 }
 
-static inline zval *php_ustring_zval_copy_ex(zval *target, php_ustring_t *source, int32_t offset, int32_t length TSRMLS_DC)
+static inline zval *php_ustring_zval_copy(zval *target, php_ustring_t *source, int32_t offset, int32_t length TSRMLS_DC)
 {
 	object_init_ex(target, ce_UString);
 
@@ -80,7 +80,7 @@ static inline zval *php_ustring_zval_copy_ex(zval *target, php_ustring_t *source
 	return target;
 }
 
-static inline int php_ustring_unistr_from_zval(UnicodeString *target, zval *source, zend_string *codepage TSRMLS_DC)
+static inline int php_ustring_from_zval(UnicodeString *target, zval *source, zend_string *codepage TSRMLS_DC)
 {
 	switch (Z_TYPE_P(source)) {
 		case IS_STRING:
@@ -134,7 +134,7 @@ static inline zval* php_ustring_read(zval *object, zval *offset, int type, zval 
 		clean = 1;
 	}
 
-	php_ustring_zval_copy_ex(rv, php_ustring_fetch(object), Z_LVAL_P(offset), 1 TSRMLS_CC);
+	php_ustring_zval_copy(rv, php_ustring_fetch(object), Z_LVAL_P(offset), 1 TSRMLS_CC);
 
 	if (clean) {
 		zval_ptr_dtor(offset);
@@ -381,7 +381,7 @@ PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) 
 
     UnicodeString uneedle;
 
-	if (php_ustring_unistr_from_zval(&uneedle, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&uneedle, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return false;
 	}
 
@@ -393,7 +393,7 @@ PHP_USTRING_API bool php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC) {
 
     UnicodeString uneedle;
 
-	if (php_ustring_unistr_from_zval(&uneedle, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&uneedle, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return false;
 	}
 
@@ -411,7 +411,7 @@ PHP_USTRING_API int32_t php_ustring_indexOf(zval *that, zval *needle, int32_t of
 		h = *ustring->val;
 	}
 
-	if (php_ustring_unistr_from_zval(&n, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&n, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return -1;
 	}
 
@@ -429,7 +429,7 @@ PHP_USTRING_API int32_t php_ustring_lastIndexOf(zval *that, zval *needle, int32_
 		h = *ustring->val;
 	}
 
-	if (php_ustring_unistr_from_zval(&n, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&n, needle, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return -1;
 	}
 
@@ -484,8 +484,8 @@ PHP_USTRING_API zval* php_ustring_replace(zval *that, zval *search, zval *replac
     php_ustring_t *ustring = php_ustring_fetch(that), *ostring;
 	UnicodeString s, r;
 
-	if (php_ustring_unistr_from_zval(&s, search, ustring->codepage TSRMLS_CC) == FAILURE ||
-			php_ustring_unistr_from_zval(&r, replace, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&s, search, ustring->codepage TSRMLS_CC) == FAILURE ||
+			php_ustring_from_zval(&r, replace, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return NULL;
 	}
     
@@ -501,7 +501,7 @@ PHP_USTRING_API zval* php_ustring_replaceSlice(zval *that, zval *slice, int32_t 
     php_ustring_t *ustring = php_ustring_fetch(that), *ostring;
     UnicodeString s;
 
-	if (php_ustring_unistr_from_zval(&s, slice, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&s, slice, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return NULL;
 	}
 
@@ -560,7 +560,7 @@ PHP_USTRING_API bool php_ustring_contains(zval *that, zval *text TSRMLS_DC) {
 
     UnicodeString t;
 
-	if (php_ustring_unistr_from_zval(&t, text, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&t, text, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return false;
 	}
     
@@ -615,7 +615,7 @@ PHP_USTRING_API zval* php_ustring_pad(zval *that, int32_t targetLength, zval *pa
 	int32_t       sourceLength = ustring->val->length();
 	int32_t       padLength, leftPadLength, rightPadLength, padStringLength, i;
 
-	if (php_ustring_unistr_from_zval(&padString, pad, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&padString, pad, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return NULL;
 	}
     padStringLength = padString.length();
@@ -680,7 +680,7 @@ PHP_USTRING_API zval* php_ustring_split(zval *that, zval *delimiter, int32_t lim
 	int32_t pos, start, delimLength, count;
 	zval piece;
 
-	if (php_ustring_unistr_from_zval(&delim, delimiter, ustring->codepage TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&delim, delimiter, ustring->codepage TSRMLS_CC) == FAILURE) {
 		return NULL;
 	}
 	delimLength = delim.length();
@@ -693,7 +693,7 @@ PHP_USTRING_API zval* php_ustring_split(zval *that, zval *delimiter, int32_t lim
 
 	if (ustring->val->length() == 0) {
 		if (limit >= 0) {
-			add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, 0, 0 TSRMLS_CC));
+			add_next_index_zval(pieces, php_ustring_zval_copy(&piece, ustring, 0, 0 TSRMLS_CC));
 		}
 		return pieces;
 	}
@@ -701,22 +701,22 @@ PHP_USTRING_API zval* php_ustring_split(zval *that, zval *delimiter, int32_t lim
 	if (limit < 0) {
 		return NULL;
 	} else if (limit <= 1) {
-		add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, 0, ustring->val->length() TSRMLS_CC));
+		add_next_index_zval(pieces, php_ustring_zval_copy(&piece, ustring, 0, ustring->val->length() TSRMLS_CC));
 		return pieces;
 	}
 
 	start = 0; pos = ustring->val->indexOf(delim, 0);
 
 	if (pos == -1) {
-		add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, 0, ustring->val->length() TSRMLS_CC));
+		add_next_index_zval(pieces, php_ustring_zval_copy(&piece, ustring, 0, ustring->val->length() TSRMLS_CC));
 	} else {
 		do {
-			add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, start, pos - start TSRMLS_CC));
+			add_next_index_zval(pieces, php_ustring_zval_copy(&piece, ustring, start, pos - start TSRMLS_CC));
 			start = pos + delimLength;
 		} while ((pos = ustring->val->indexOf(delim, start)) != -1 && --limit > 1);
 
 		if (start <= ustring->val->length()) {
-			add_next_index_zval(pieces, php_ustring_zval_copy_ex(&piece, ustring, start, ustring->val->length() - start TSRMLS_CC));
+			add_next_index_zval(pieces, php_ustring_zval_copy(&piece, ustring, start, ustring->val->length() - start TSRMLS_CC));
 		}
 	}
 
@@ -767,8 +767,8 @@ static inline HashTable* php_ustring_debug(zval *that, int *is_temp TSRMLS_DC) {
 PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
     UnicodeString us1, us2;
 
-	if (php_ustring_unistr_from_zval(&us1, op1, UG(codepage) TSRMLS_CC) == FAILURE ||
-			php_ustring_unistr_from_zval(&us2, op2, UG(codepage) TSRMLS_CC) == FAILURE) {
+	if (php_ustring_from_zval(&us1, op1, UG(codepage) TSRMLS_CC) == FAILURE ||
+			php_ustring_from_zval(&us2, op2, UG(codepage) TSRMLS_CC) == FAILURE) {
 		return 0;
 	}
 

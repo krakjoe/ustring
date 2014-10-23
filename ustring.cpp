@@ -358,7 +358,7 @@ static inline int php_ustring_operate(zend_uchar opcode, zval *result, zval *op1
 	return FAILURE;
 }
 
-PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_t vlen, const char *codepage, int32_t clen TSRMLS_DC) {
+PHP_USTRING_API void php_ustring_construct(zval *that, zend_string *value, zend_string *codepage TSRMLS_DC) {
    php_ustring_t* ustring;
     
     if (Z_TYPE_P(that) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(that), ce_UString TSRMLS_CC)) {
@@ -370,10 +370,10 @@ PHP_USTRING_API void php_ustring_construct(zval *that, const char *value, int32_
     if (!codepage) {
         ustring->codepage = zend_string_copy(UG(codepage));
     } else {
-		ustring->codepage = zend_string_init(codepage, clen, 0);
+		ustring->codepage = zend_string_copy(codepage);
 	}
     
-    ustring->val = new UnicodeString(value, vlen, ustring->codepage->val);
+    ustring->val = new UnicodeString(value->val, value->len, ustring->codepage->val);
 }
 
 PHP_USTRING_API bool php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC) {
@@ -775,10 +775,12 @@ PHP_USTRING_API int php_ustring_compare(zval *op1, zval *op2 TSRMLS_DC) {
 	return us1.compare(us2);
 }
 
-PHP_USTRING_API void php_ustring_setDefaultCodepage(const char *value, int32_t len TSRMLS_DC) {
-    zend_string_release(UG(codepage));
+PHP_USTRING_API void php_ustring_setDefaultCodepage(zend_string *codepage TSRMLS_DC) {
+    if (UG(codepage)) {
+        zend_string_release(UG(codepage));
+    }
 
-	UG(codepage) = zend_string_init(value, len, 0);
+	UG(codepage) = zend_string_copy(codepage);
 }
 
 PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D) {
@@ -788,15 +790,13 @@ PHP_USTRING_API zend_string* php_ustring_getDefaultCodepage(TSRMLS_D) {
 /* {{{ proto UString UString::__contruct([string arg , [string codepage = "utf-8"]]) */
 PHP_METHOD(UString, __construct)
 {
-	char *value = NULL, 
-	     *codepage = NULL;
-	size_t vlen = 0, clen = 0;
+	zend_string *value, *codepage = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &value, &vlen, &codepage, &clen) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|S", &value, &codepage) != SUCCESS) {
 		return;
 	}
 
-	php_ustring_construct(getThis(), value, vlen, codepage, clen TSRMLS_CC);
+	php_ustring_construct(getThis(), value, codepage TSRMLS_CC);
 }
 /* }}} */
 
@@ -1014,14 +1014,13 @@ PHP_METHOD(UString, getCodepage) {
 
 /* {{{ proto void UString::setDefaultCodepage(string codepage) */
 PHP_METHOD(UString, setDefaultCodepage) {
-	char   *codepage = NULL;
-	size_t clen = 0;
+	zend_string *codepage = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &codepage, &clen) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &codepage) != SUCCESS) {
 		return;
 	}
 
-	php_ustring_setDefaultCodepage(codepage, (int32_t)clen TSRMLS_CC);
+	php_ustring_setDefaultCodepage(codepage TSRMLS_CC);
 } /* }}} */
 
 /* {{{ proto string UString::getDefaultCodepage(void) */
@@ -1202,19 +1201,18 @@ PHP_MINFO_FUNCTION(ustring)
 }
 /* }}} */
 
-/* {{{ proto UString u(string value) */
+/* {{{ proto UString u(string value [, string codepage]) */
 PHP_FUNCTION(u) {
-    char   *val;
-    size_t len;
+    zend_string *value, *codepage = NULL;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &val, &len) != SUCCESS) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|S", &value, &codepage) != SUCCESS) {
         return;
     }
     
     object_init_ex(return_value, ce_UString);
     
     php_ustring_construct
-        (return_value, val, len, UG(codepage)->val, UG(codepage)->len TSRMLS_CC);
+        (return_value, value, codepage TSRMLS_CC);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ustring_u_arginfo, 0, 0, 1)

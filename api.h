@@ -36,7 +36,7 @@ extern "C" {
 }
 
 /* {{{ */
-PHP_USTRING_API void           php_ustring_construct(zval *that, const char *value, int32_t len, const char *codepage, int32_t clen TSRMLS_DC);
+PHP_USTRING_API void           php_ustring_construct(zval *that, zend_string *value, zend_string *codepage TSRMLS_DC);
 PHP_USTRING_API int32_t        php_ustring_length(zval *that TSRMLS_DC);
 PHP_USTRING_API bool           php_ustring_startsWith(zval *that, zval *needle TSRMLS_DC);
 PHP_USTRING_API bool           php_ustring_endsWith(zval *that, zval *needle TSRMLS_DC);
@@ -58,7 +58,7 @@ PHP_USTRING_API zval*          php_ustring_pad(zval *that, int32_t target_len, z
 PHP_USTRING_API zval*          php_ustring_split(zval *that, zval *delimiter, int32_t limit, zval *pieces TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getCodepage(zval *that TSRMLS_DC);
 
-PHP_USTRING_API void           php_ustring_setDefaultCodepage(const char *value, int32_t len TSRMLS_DC);
+PHP_USTRING_API void           php_ustring_setDefaultCodepage(zend_string *codepage TSRMLS_DC);
 PHP_USTRING_API zend_string*   php_ustring_getDefaultCodepage(TSRMLS_D);
 
 PHP_USTRING_API extern zend_class_entry* ce_UString;

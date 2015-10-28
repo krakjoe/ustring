@@ -23,118 +23,103 @@ class UString implements Traversable {
     
     /** 
     * Shall return a new UString whose characters are converted to upper case
-    * @return UString
     **/
-    public function toUpper(void);
+    public function toUpper(): UString;
     
     /** 
     * Shall return a new UString whose characters are converted to lower case
-    * @return UString
     **/
-    public function toLower(void);
+    public function toLower(): UString;
     
     /** 
     * Shall return a new UString whose characters have been reversed
-    * @return UString
     **/
-    public function reverse(void);
+    public function reverse(): UString;
     
     /**
     * Shall return a new UString with the leading and trailing space removed
-    * @return UString
     **/
-    public function trim(void);
+    public function trim(): UString;
     
     /**
     * Shall return a new UString with every occurence of $search having been replaced with $replace
-    * @return UString
     **/
-    public function replace(UString $search, UString $replace);
+    public function replace(UString $search, UString $replace): UString;
     
     /**
     * Shall return a new UString with the substring starting at $start and having length $length replaced by $text.
-    * @return UString
     **/
-    public function replaceSlice(UString $text [, int $start [, int $length]])
+    public function replaceSlice(UString $text, int $start, int $length): UString;
     
     /**
     * Shall return positively if this contains $text
-    * @return bool
     **/
-    public function contains(UString $text);
+    public function contains(UString $text): bool;
     
     /**
     * Shall return positively if this starts with $needle
-    * @return bool
     **/
-    public function startsWith(UString $needle);
+    public function startsWith(UString $needle): bool;
     
     /**
     * Shall return positively if this ends with $needle
-    * @return bool
     **/
-    public function endsWith(UString $needle);
+    public function endsWith(UString $needle): bool;
     
     /**
     * Shall return the index of the first occurence of $needle, with the search starting at $offset
     * @return mixed
     **/
-    public function indexOf(UString $needle [, int $offset]);
+    public function indexOf(UString $needle, int $offset = 0);
     
     /**
     * Shall return the index of the last occurence of $needle, with the search starting at $offset
     * @return mixed
     **/
-    public function lastIndexOf(UString $needle [, int $offset]);
+    public function lastIndexOf(UString $needle, int $offset = 0);
     
     /**
     * Shall return an array of UString containing chunks of this, each with a maximum length of $length
     * @return UString[]
     **/
-    public function chunk(int $length);
+    public function chunk(int $length): array;
     
     /**
     * Shall return a new UString with the contents of this repeated $count times
-    * @return UString
     **/
-    public function repeat(int $count);
+    public function repeat(int $count): UString;
     
     /**
 	* Shall return a new UString padded to a given length with the pad character
-    * @return UString
     **/
-    public function pad(int $length [, UString $pad = ' ' [, int $mode = STR_PAD_RIGHT ] ]);
+    public function pad(int $length, UString $pad = ' ', int $mode = STR_PAD_RIGHT): UString;
     
     /**
 	* Shall split a UString by the delimeter up to the limit, if specified, returning an array of UStrings
     * @return UString[]
     **/
-    public function split(UString $delimiter [, int $limit = NULL]);
+    public function split(UString $delimiter, int $limit = NULL): array;
     
     /**
 	* Shall return a new UString containing the single code point at the given index
-    * @return UString
     **/
-    public function charAt(int $index);
+    public function charAt(int $index): UString;
     
     /**
     * Shall return a new UString containing a substring of this, starting at $start with a maximum length of $length
     * If $length is not provided shall use UnicodeString::length() - $start to determine the length of the substring to return
-    * @return UString
     **/
-    public function substring(int $start [, int $length]);
+    public function substring(int $start, int $length): UString;
     
     /**
     * Shall return the codepage of this
-    * @return string
     **/
-    public function getCodepage(void);
+    public function getCodepage(): string;
     
     /**
     * Shall return the default codepage
-    * @return string
     **/
-    public static function getDefaultCodepage();
+    public static function getDefaultCodepage(): string;
     
     /**
     * Shall set the default codepage
@@ -145,9 +130,8 @@ class UString implements Traversable {
 
 /**
 * A convenience shortcut for UString constructor is registered by the extension
-* @return UString
 **/
-function u(string $value [, string $codepage]);
+function u(string $value [, string $codepage]): UString;
 ?>
 ```
 

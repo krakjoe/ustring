@@ -3,7 +3,7 @@
 ustring
 =======
 
-Provides a simple interface to work with Unicode strings in upcoming PHP7.
+Provides a simple interface to work with Unicode strings in PHP7.
 
 
 ```php

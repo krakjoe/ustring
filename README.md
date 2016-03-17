@@ -135,7 +135,7 @@ function u(string $value [, string $codepage]): UString;
 ?>
 ```
 
-This API is derived, in part, from work done by Nikita Poppov, which can be found here: https://github.com/nikic/scalar_objects/blob/master/doc/string_api.md
+This API is derived, in part, from work done by Nikita Popov, which can be found here: https://github.com/nikic/scalar_objects/blob/master/doc/string_api.md
 
 *Note: UString is interchangable with zend strings for method parameters and can be cast for output/conversion to zend strings*
 
